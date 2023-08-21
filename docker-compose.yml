@@ -1,0 +1,29 @@
+version: "5"
+
+services:
+  db:
+    image: postgres:15-alpine
+    expose:
+      - 5430
+    ports:
+      - "5430:5430"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=micro
+
+  users:
+    build:
+      context: ./users
+    ports:
+      - "8002:8002"
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8002 --reload"
+
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8001:8001"
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8001 --reload"
