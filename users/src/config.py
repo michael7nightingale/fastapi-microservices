@@ -1,0 +1,26 @@
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    DB_HOST: str
+    DB_PORT: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_NAME: str
+
+    @property
+    def db_url(self):
+        return "postgres://{user}:{password}@{host}:{port}/{name}".format(
+            user=self.DB_USER,
+            password=self.DB_PASSWORD,
+            host=self.DB_HOST,
+            port=self.DB_PORT,
+            name=self.DB_NAME
+        )
+
+    class Config:
+        env_file = "../.env"
+
+
+def get_settings() -> Settings:
+    return Settings()
