@@ -1,6 +1,6 @@
 from fastapi import Depends, Request
 
-from .db.services import CityService, CountryService
+from .db.services import EmployeeService, PostService, StoreService
 
 
 def get_pool(request: Request):
@@ -18,5 +18,6 @@ def get_service(service_class):
     return inner
 
 
-get_city_service = get_service(CityService)
-get_country_service = get_city_service(CountryService)
+get_store_service = get_service(StoreService)
+get_post_service = get_service(PostService)
+get_employee_service = get_service(EmployeeService)

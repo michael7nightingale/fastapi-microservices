@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from sqlalchemy import String, Column, ForeignKey, Integer
 
 from .events import Base
@@ -14,8 +16,8 @@ class Post(SQLAlchemyModel, Base):
     __tablename__ = "posts"
 
     title = Column(String(200), unique=True, index=True)
-    min_salary = Column(Integer)
-    max_salary = Column(Integer)
+    min_salary = Column(Integer())
+    max_salary = Column(Integer())
 
 
 class Employee(SQLAlchemyModel, Base):
@@ -26,5 +28,5 @@ class Employee(SQLAlchemyModel, Base):
     last_name = Column(String(125))
     email = Column(String(125), unique=True)
     key = Column(String(200), primary_key=True, default=lambda: str(uuid4()))
-    salary = Column(Integer)
+    salary = Column(Integer())
     post = Column(String(200), ForeignKey("posts.id"))
