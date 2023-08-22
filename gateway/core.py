@@ -16,8 +16,8 @@ class GateWay(FastAPI):
         method: str,
         path: str,
         service_base_url: str,
-        response_model: BaseModel,
-        body_key: str,
+        response_model: BaseModel | None = None,
+        body_key: str | None = None,
     ):
         if not (path[0] == "/" and path[:2] != "//"):
             raise ValueError("Path must start with a single slash `/`.")
@@ -28,7 +28,10 @@ class GateWay(FastAPI):
             @wraps(func)
             async def inner(request: Request, **kwargs):
                 """Request to service """
-                data = kwargs.get(body_key)
+                if body_key:
+                    data = kwargs.get(body_key)
+                else:
+                    data = None
                 service_url = service_base_url + str(request.url.path)
 
                 response_data = await make_request(
