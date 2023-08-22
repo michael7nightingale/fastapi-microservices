@@ -1,18 +1,11 @@
-from tortoise import Model, fields
 from uuid import uuid4
 
+from sqlalchemy import Column, String
 
-class TortoiseModel(Model):
-    id = fields.CharField(max_length=255, pk=True, default=lambda: str(uuid4()))
+
+class SQLAlchemyModel:
+    """For getting dict object of the model."""
+    id = Column(String(100), primary_key=True, default=lambda: str(uuid4()))
 
     def as_dict(self):
-        schema = self.describe()
-        dicted = {field['name']: getattr(self, field['name']) for field in schema['data_fields']}
-        dicted[schema['pk_field']['name']] = str(getattr(self, schema['pk_field']['name']))
-        return dicted
-
-    def update_from_dict(self, data: dict):
-        return super().update_from_dict({k: v for k, v in data.items() if v is not None})
-
-    class Meta:
-        abstract = True
+        return {i.name: getattr(self, i.name) for i in self.__table__.columns}

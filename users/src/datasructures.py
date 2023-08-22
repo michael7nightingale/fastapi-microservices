@@ -6,6 +6,8 @@ class UserModel(BaseModel):
     email: str
     first_name: str
     last_name: str
+    is_superuser: bool = False
+    is_staff: bool = False
 
 
 class UserRegister(BaseModel):

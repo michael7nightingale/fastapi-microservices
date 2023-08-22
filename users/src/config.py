@@ -8,9 +8,13 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
+    ALGORITHM: str
+    SECRET_KEY: str
+    EXPIRE_MINUTES: int
+
     @property
     def db_url(self):
-        return "postgres://{user}:{password}@{host}:{port}/{name}".format(
+        return "postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}".format(
             user=self.DB_USER,
             password=self.DB_PASSWORD,
             host=self.DB_HOST,
@@ -19,7 +23,7 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = "../.env"
+        env_file = ".env"
 
 
 def get_settings() -> Settings:
