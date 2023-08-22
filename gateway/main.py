@@ -1,4 +1,5 @@
 from fastapi import Request, Body
+from fastapi_authtools.models import EmailPasswordToken
 
 from core import GateWay
 from config import Settings
@@ -14,7 +15,7 @@ app = GateWay()
     response_model=UserRegister,
     body_key="user_data"
 )
-async def register(request: Request, user_data: UserRegister):
+async def register(request: Request, user_data: UserRegister = Body()):
     pass
 
 
@@ -24,7 +25,7 @@ async def register(request: Request, user_data: UserRegister):
     response_model=TokenCreate,
     body_key="token_data"
 )
-async def register(request: Request, token_data: Token):
+async def register(request: Request, token_data: EmailPasswordToken = Body()):
     pass
 
 

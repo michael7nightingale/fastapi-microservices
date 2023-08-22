@@ -24,12 +24,12 @@ class GateWay(FastAPI):
         app_route_decorator = getattr(super(), method)
 
         def wrapper(func: Callable):
-            @app_route_decorator(path, response_model=response_model)
+            @app_route_decorator(path)
             @wraps(func)
             async def inner(request: Request, **kwargs):
                 """Request to service """
                 if body_key:
-                    data = kwargs.get(body_key)
+                    data = kwargs.get(body_key).model_dump()
                 else:
                     data = None
                 service_url = service_base_url + str(request.url.path)
