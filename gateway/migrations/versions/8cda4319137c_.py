@@ -53,7 +53,38 @@ def upgrade() -> None:
                     sa.ForeignKeyConstraint(['city'], ['cities.id'], ),
                     sa.PrimaryKeyConstraint('id')
                     )
-    # ### end Alembic commands ###
+
+    op.create_table('stores',
+                    sa.Column('address', sa.String(length=200), nullable=True),
+                    sa.Column('min_salary', sa.Integer(), nullable=True),
+                    sa.Column('max_salary', sa.Integer(), nullable=True),
+                    sa.Column('id', sa.String(length=100), nullable=False),
+                    sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
+                    sa.PrimaryKeyConstraint('id')
+                    )
+
+    op.create_table('posts',
+                    sa.Column('title', sa.String(length=200), nullable=True),
+                    sa.Column('min_salary', sa.Integer(), nullable=True),
+                    sa.Column('max_salary', sa.Integer(), nullable=True),
+                    sa.Column('id', sa.String(length=100), nullable=False),
+                    sa.PrimaryKeyConstraint('id')
+                    )
+    op.create_index(op.f('ix_posts_title'), 'posts', ['title'], unique=True)
+    op.create_table('employees',
+                    sa.Column('first_name', sa.String(length=125), nullable=True),
+                    sa.Column('last_name', sa.String(length=125), nullable=True),
+                    sa.Column('email', sa.String(length=125), nullable=True),
+                    sa.Column('key', sa.String(length=200), nullable=False),
+                    sa.Column('store', sa.String(length=200), nullable=False),
+                    sa.Column('post', sa.String(length=200), nullable=False),
+                    sa.Column('salary', sa.Integer(), nullable=True),
+                    sa.Column('id', sa.String(length=100), nullable=False),
+                    sa.PrimaryKeyConstraint('key', 'id'),
+                    sa.ForeignKeyConstraint(['store'], ['stores.id'], ),
+                    sa.ForeignKeyConstraint(['post'], ['posts.id'], ),
+                    sa.UniqueConstraint('email')
+                    )
 
 
 def downgrade() -> None:

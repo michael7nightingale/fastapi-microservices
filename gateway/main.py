@@ -5,6 +5,8 @@ from core import GateWay
 from config import Settings
 from datastructures.users import UserRegister, Token, TokenCreate
 from datastructures.locations import City, CityCreate, CountryCreate, Country
+from datastructures.stores import Post, PostCreate, Store, StoreCreate, EmployeeCreate, Employee
+
 
 app = GateWay()
 
@@ -80,4 +82,76 @@ async def create_country(request: Request, country_data: CountryCreate = Body())
     service_base_url=Settings().LOCATIONS_SERVICE_URL,
 )
 async def delete_country(request: Request):
+    pass
+
+
+@app.get(
+    path="/stores",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=list[Store]
+)
+async def stores(
+    request: Request,
+):
+    pass
+
+
+@app.post(
+    path="/stores",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=Store,
+    body_key="store_data"
+)
+async def create_store(
+    request: Request,
+    store_data: StoreCreate = Body(),
+):
+    pass
+
+
+@app.get(
+    path="/posts",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=list[Post],
+)
+async def posts(
+    request: Request,
+):
+    pass
+
+
+@app.post(
+    path="/posts",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=Post,
+    body_key="post_data"
+)
+async def create_post(
+    request: Request,
+    post_data: PostCreate = Body(),
+):
+    pass
+
+
+@app.get(
+    path="/employees",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=list[Employee]
+)
+async def employees(
+    request: Request,
+):
+    pass
+
+
+@app.post(
+    path="/employees",
+    service_base_url=Settings().STORES_SERVICE_URL,
+    response_model=Employee,
+    body_key="employee_data"
+)
+async def create_employee(
+    request: Request,
+    employee_data: EmployeeCreate = Body(),
+):
     pass
