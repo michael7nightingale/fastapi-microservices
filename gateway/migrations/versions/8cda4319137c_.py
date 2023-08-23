@@ -33,58 +33,162 @@ def upgrade() -> None:
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     # ### end Alembic commands ###
 
-    op.create_table('countries',
-                    sa.Column('name', sa.String(length=125), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_table('cities',
-                    sa.Column('name', sa.String(length=125), nullable=True),
-                    sa.Column('country', sa.String(length=200), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.ForeignKeyConstraint(['country'], ['countries.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
-    op.create_table('addresses',
-                    sa.Column('city', sa.String(length=200), nullable=True),
-                    sa.Column('street', sa.String(length=100), nullable=True),
-                    sa.Column('number', sa.String(length=10), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.ForeignKeyConstraint(['city'], ['cities.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
+    op.create_table(
+        'countries',
+        sa.Column('name', sa.String(length=125), nullable=True),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table(
+        'cities',
+        sa.Column('name', sa.String(length=125), nullable=True),
+        sa.Column('country', sa.String(length=200), nullable=True),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        sa.ForeignKeyConstraint(['country'], ['countries.id'], ),
+        sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table(
+        'addresses',
+        sa.Column('city', sa.String(length=200), nullable=True),
+        sa.Column('street', sa.String(length=100), nullable=True),
+        sa.Column('number', sa.String(length=10), nullable=True),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        sa.ForeignKeyConstraint(['city'], ['cities.id'], ),
+        sa.PrimaryKeyConstraint('id')
+    )
 
-    op.create_table('stores',
-                    sa.Column('address', sa.String(length=200), nullable=True),
-                    sa.Column('min_salary', sa.Integer(), nullable=True),
-                    sa.Column('max_salary', sa.Integer(), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
-                    sa.PrimaryKeyConstraint('id')
-                    )
+    op.create_table(
+        'stores',
+        sa.Column('address', sa.String(length=200), nullable=True),
+        sa.Column('min_salary', sa.Integer(), nullable=True),
+        sa.Column('max_salary', sa.Integer(), nullable=True),
+        sa.Column('id', sa.String(length=100), nullable=False),                    sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
+        sa.PrimaryKeyConstraint('id')
+    )
 
-    op.create_table('posts',
-                    sa.Column('title', sa.String(length=200), nullable=True),
-                    sa.Column('min_salary', sa.Integer(), nullable=True),
-                    sa.Column('max_salary', sa.Integer(), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.PrimaryKeyConstraint('id')
-                    )
+    op.create_table(
+        'posts',
+        sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column('min_salary', sa.Integer(), nullable=False),
+        sa.Column('max_salary', sa.Integer(), nullable=False),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint("title")
+    )
     op.create_index(op.f('ix_posts_title'), 'posts', ['title'], unique=True)
-    op.create_table('employees',
-                    sa.Column('first_name', sa.String(length=125), nullable=True),
-                    sa.Column('last_name', sa.String(length=125), nullable=True),
-                    sa.Column('email', sa.String(length=125), nullable=True),
-                    sa.Column('key', sa.String(length=200), nullable=False),
-                    sa.Column('store', sa.String(length=200), nullable=False),
-                    sa.Column('post', sa.String(length=200), nullable=False),
-                    sa.Column('salary', sa.Integer(), nullable=True),
-                    sa.Column('id', sa.String(length=100), nullable=False),
-                    sa.PrimaryKeyConstraint('key', 'id'),
-                    sa.ForeignKeyConstraint(['store'], ['stores.id'], ),
-                    sa.ForeignKeyConstraint(['post'], ['posts.id'], ),
-                    sa.UniqueConstraint('email')
-                    )
+
+    op.create_table(
+        'employees',
+        sa.Column('first_name', sa.String(length=125), nullable=False),
+        sa.Column('last_name', sa.String(length=125), nullable=False),
+        sa.Column('email', sa.String(length=125), nullable=False),
+        sa.Column('key', sa.String(length=200), nullable=False),
+        sa.Column('store', sa.String(length=200), nullable=False),
+        sa.Column('post', sa.String(length=200), nullable=False),
+        sa.Column('salary', sa.Integer(), nullable=False),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['store'], ['stores.id'], ),
+        sa.ForeignKeyConstraint(['post'], ['posts.id'], ),
+        sa.UniqueConstraint('email')
+    )
+
+    op.create_table(
+        "companies",
+        sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column('description', sa.Text(), nullable=False),
+        sa.Column('country', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['country'], ['countries.id'], ),
+        sa.UniqueConstraint('title')
+    )
+    op.create_index(op.f('ix_companies_title'), 'companies', ['title'], unique=True)
+
+    op.create_table(
+        "categories",
+        sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('title')
+    )
+    op.create_index(op.f('ix_categories_title'), 'categories', ['title'], unique=True)
+
+    op.create_table(
+        "subcategories",
+        sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column('category', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['category'], ['categories.id'], ),
+        sa.UniqueConstraint('title')
+    )
+    op.create_index(op.f('ix_subcategories_title'), 'subcategories', ['title'], unique=True)
+
+    op.create_table(
+        "goods",
+        sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column("description", sa.Text(), nullable=False),
+        sa.Column("price", sa.Integer(), nullable=False),
+        sa.Column("discount", sa.Integer(), nullable=False),
+        sa.Column('subcategory', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['subcategory'], ['subcategories.id'], ),
+        sa.UniqueConstraint('title')
+    )
+
+    op.create_table(
+        "store_goods",
+        sa.Column('store', sa.String(length=200), nullable=False),
+        sa.Column("amount", sa.Integer(), nullable=False),
+        sa.Column('good', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['good'], ['goods.id'], ),
+        sa.ForeignKeyConstraint(['store'], ['stores.id'], ),
+    )
+
+    op.create_table(
+        "description_tags",
+        sa.Column('tag', sa.String(length=200), nullable=False),
+        sa.Column("text", sa.Text(), nullable=False),
+        sa.Column('good', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['good'], ['goods.id'], ),
+    )
+
+    op.create_table(
+        "baskets",
+        sa.Column('user', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['user'], ['users.id'], ),
+        sa.UniqueConstraint('user')
+    )
+    op.create_table(
+        "basketgoods",
+        sa.Column('basket', sa.String(length=200), nullable=False),
+        sa.Column('good', sa.String(length=200), nullable=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['basket'], ['baskets.id'], ),
+        sa.ForeignKeyConstraint(['good'], ['goods.id'], ),
+    )
+
+    op.create_table(
+        "orders",
+        sa.Column('basket', sa.String(length=200), nullable=False),
+        sa.Column('address', sa.String(length=200), nullable=False),
+        sa.Column("is_paid", sa.Boolean(), nullable=False, default=False),
+        sa.Column('id', sa.String(length=200), nullable=False),
+        sa.Column('time_created', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('time_finished', sa.DateTime(timezone=True), nullable=True),
+        sa.PrimaryKeyConstraint('id'),
+        sa.ForeignKeyConstraint(['basket'], ['baskets.id'], ),
+        sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
+    )
 
 
 def downgrade() -> None:
