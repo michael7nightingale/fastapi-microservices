@@ -12,6 +12,14 @@ class Store(SQLAlchemyModel, Base):
     address = Column(String(200), ForeignKey("addresses.id"))
 
 
+class StoreGood(SQLAlchemyModel, Base):
+    __tablename__ = "store_goods"
+
+    store = Column(String(200), ForeignKey("stores.id"))
+    good = Column(String(200), ForeignKey("goods.id"))
+    amount = Column(Integer())
+
+
 class Post(SQLAlchemyModel, Base):
     __tablename__ = "posts"
 
