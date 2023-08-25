@@ -14,6 +14,24 @@ services:
     networks:
       - default
 
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8001:8001"
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn main:app --host 0.0.0.0 --port 8001 --reload"
+    networks:
+      - default
+    depends_on:
+      - db
+      - users
+      - locations
+      - stores
+      - goods
+      - orders
+
   users:
     build:
       context: ./users
@@ -34,16 +52,36 @@ services:
     networks:
       - default
 
-  gateway:
+  stores:
     build:
-      context: ./gateway
+      context: ./stores
     ports:
-      - "8001:8001"
+      - "8004:8004"
     command: >
-      sh -c "alembic upgrade head &&
-             uvicorn main:app --host 0.0.0.0 --port 8001 --reload"
+      sh -c "uvicorn main:create_app --host 0.0.0.0 --port 8004 --reload"
     networks:
       - default
+
+  goods:
+    build:
+      context: ./goods
+    ports:
+      - "8005:8005"
+    command: >
+      sh -c "uvicorn main:create_app --host 0.0.0.0 --port 8005 --reload"
+    networks:
+      - default
+
+  orders:
+    build:
+      context: ./orders
+    ports:
+      - "8006:8006"
+    command: >
+      sh -c "uvicorn main:create_app --host 0.0.0.0 --port 8006 --reload"
+    networks:
+      - default
+
 
 networks:
   default: {}
