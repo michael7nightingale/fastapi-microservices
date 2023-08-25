@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.hash import sha256_crypt
 
-from .models import Order
+from .models import Good, Subcategory, Category, DescriptionTag, Company
 from .repositories import AsyncSQLAlchemyRepository
 
 
@@ -44,5 +43,21 @@ class AsyncSQLAlchemyService:
         return await self.repository.create(**kwargs)
 
 
-class OrderService(AsyncSQLAlchemyService):
-    model = Order
+class GoodService(AsyncSQLAlchemyService):
+    model = Good
+
+
+class SubcategoryService(AsyncSQLAlchemyService):
+    model = Subcategory
+
+
+class CategoryService(AsyncSQLAlchemyService):
+    model = Category
+
+
+class DescriptionTagService(AsyncSQLAlchemyService):
+    model = DescriptionTag
+
+
+class CompanyService(AsyncSQLAlchemyService):
+    model = Company
