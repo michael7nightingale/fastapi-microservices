@@ -128,6 +128,7 @@ def upgrade() -> None:
     op.create_table(
         "goods",
         sa.Column('title', sa.String(length=200), nullable=False),
+        sa.Column('company', sa.String(length=200), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
         sa.Column("price", sa.Integer(), nullable=False),
         sa.Column("discount", sa.Integer(), nullable=False),
@@ -135,6 +136,7 @@ def upgrade() -> None:
         sa.Column('id', sa.String(length=200), nullable=False),
         sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['subcategory'], ['subcategories.id'], ),
+        sa.ForeignKeyConstraint(['company'], ['companies.id'], ),
         sa.UniqueConstraint('title')
     )
 
