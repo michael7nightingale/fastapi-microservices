@@ -1,24 +1,98 @@
-from pydantic import BaseModel, Field
-from datetime import datetime
+from pydantic import BaseModel
 
 
-class OrderCreate(BaseModel):
-    user: str
-    address: str
-    good: str | None = None
-    is_paid: bool = False
-    time_created: datetime = Field(default_factory=datetime.utcnow)
-    time_finished: datetime = Field(default_factory=datetime.utcnow)
+class CompanyCreate(BaseModel):
+    title: str
+    description: str
+    country: str
 
 
-class Order(BaseModel):
+class CompanyUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    country: str | None = None
+
+
+class Company(BaseModel):
     id: str
-    user: str
-    address: str
+    title: str
+    description: str
+    country: str
+
+
+class CategoryCreate(BaseModel):
+    title: str
+
+
+class CategoryUpdate(BaseModel):
+    title: str | None = None
+
+
+class Category(BaseModel):
+    id: str
+    title: str
+
+
+class SubcategoryCreate(BaseModel):
+    title: str
+    category: str
+
+
+class SubcategoryUpdate(BaseModel):
+    title: str | None = None
+    category: str | None = None
+
+
+class Subcategory(BaseModel):
+    id: str
+    title: str
+    category: str
+
+
+class GoodCreate(BaseModel):
+    title: str
+    description: str
+    subcategory: str
+    price: int
+    discount: int
+    company: str
+
+
+class GoodUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    subcategory: str | None = None
+    price: int | None = None
+    discount: int | None = None
+
+
+class Good(BaseModel):
+    id: str
+    title: str
+    description: str
+    subcategory: str
+    price: int
+    discount: int
+    company: str
+
+
+class DescriptionTagCreate(BaseModel):
+    good: str
+    tag: str
+    text: str
+
+
+class DescriptionTagUpdate(BaseModel):
     good: str | None = None
-    is_paid: bool
-    time_created: datetime
-    time_finished: datetime
+    tag: str | None = None
+    text: str | None = None
+
+
+class DescriptionTag(BaseModel):
+    id: str
+    good: str
+    tag: str
+    text: str
 
 
 class UserModel(BaseModel):
