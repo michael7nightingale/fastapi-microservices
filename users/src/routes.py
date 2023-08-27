@@ -11,7 +11,7 @@ router = APIRouter(prefix="/users")
 
 
 @router.post("/token")
-async def user_home(
+async def token(
     request: Request,
     token_data: EmailPasswordToken = Body(),
     user_service=Depends(get_user_service)
@@ -25,7 +25,7 @@ async def user_home(
 
 
 @router.post("/register")
-async def user_home(
+async def register(
     request: Request,
     user_data: UserRegister = Body(),
     user_service=Depends(get_user_service)
