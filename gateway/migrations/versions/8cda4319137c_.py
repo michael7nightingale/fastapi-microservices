@@ -62,7 +62,8 @@ def upgrade() -> None:
         sa.Column('address', sa.String(length=200), nullable=True),
         sa.Column('min_salary', sa.Integer(), nullable=True),
         sa.Column('max_salary', sa.Integer(), nullable=True),
-        sa.Column('id', sa.String(length=100), nullable=False),                    sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
+        sa.Column('id', sa.String(length=100), nullable=False),
+        a.ForeignKeyConstraint(['address'], ['addresses.id'], ),
         sa.PrimaryKeyConstraint('id')
     )
 
