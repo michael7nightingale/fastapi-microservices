@@ -47,8 +47,10 @@ class AsyncSQLAlchemyRepository:
         query = select(self._model)
         return (await self._session.execute(query)).scalars().all()
 
-    async def update(self, id_, **kwargs) -> None:
+    async def update(self, id_, strict_nullable=False, **kwargs) -> None:
         """Update object by pk (id) with values kwargs"""
+        if not strict_nullable:
+            kwargs = {k: v for k, v in kwargs.items() if v is not None}
         query = update(self._model).where(self._model.id == id_).values(**kwargs)
         await self._session.execute(query)
         await self.commit()

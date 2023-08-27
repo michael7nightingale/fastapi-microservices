@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, Request, Body
+from fastapi.responses import JSONResponse
 
-from .datasructures import StoreCreate, Store, Employee, EmployeeCreate, PostCreate, Post
+from .connectors import create_address
+from .datasructures import StoreCreate, Store, Employee, EmployeeCreate, PostCreate, Post, Address
 from .dependencies import get_store_service, get_post_service, get_employee_service
 from .permissions import permission_required
+
 
 router = APIRouter()
 
@@ -23,7 +26,14 @@ async def create_store(
     store_data: StoreCreate = Body(),
     store_service=Depends(get_store_service)
 ):
-    new_store = await store_service.create(**store_data.model_dump())
+    address_create_response = await create_address(
+        store_data.address.model_dump(),
+        headers=request.headers
+    )
+    if not address_create_response:
+        return address_create_response.json()
+    address = Address(**(await address_create_response.json()))
+    new_store = await store_service.create(address=address.id)
     return new_store
 
 
