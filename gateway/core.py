@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
-from typing import Callable
 from pydantic import BaseModel
+from typing import Callable, Type
 from functools import wraps
 
 from connector import make_request
@@ -16,7 +16,7 @@ class GateWay(FastAPI):
         method: str,
         path: str,
         service_base_url: str,
-        response_model: BaseModel | None = None,
+        response_model: Type[BaseModel] | None = None,
         body_key: str | None = None,
     ):
         if not (path[0] == "/" and path[:2] != "//"):
@@ -39,6 +39,8 @@ class GateWay(FastAPI):
                     url=service_url,
                     data=data,
                 )
+                if response_model:
+                    response_data = response_model(**response_data)
                 return response_data
 
             return inner

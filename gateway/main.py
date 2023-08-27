@@ -4,12 +4,14 @@ from fastapi_authtools.models import EmailPasswordToken
 from core import GateWay
 from config import Settings
 from datastructures.users import UserRegister, Token, TokenCreate
-from datastructures.locations import City, CityCreate, CountryCreate, Country
+from datastructures.locations import City, CityCreate, CountryCreate, Country, AddressCreate, Address
 from datastructures.stores import Post, PostCreate, Store, StoreCreate, EmployeeCreate, Employee
 
 
 app = GateWay()
 
+
+# =============================== USERS ================================ #
 
 @app.post(
     path="/users/register",
@@ -24,12 +26,14 @@ async def register(request: Request, user_data: UserRegister = Body()):
 @app.post(
     path="/users/token",
     service_base_url=Settings().USER_SERVICE_URL,
-    response_model=TokenCreate,
+    response_model=Token,
     body_key="token_data"
 )
 async def register(request: Request, token_data: EmailPasswordToken = Body()):
     pass
 
+
+# =============================== LOCATIONS ================================ #
 
 @app.get(
     path="/locations/cities",
@@ -84,6 +88,35 @@ async def create_country(request: Request, country_data: CountryCreate = Body())
 async def delete_country(request: Request):
     pass
 
+
+@app.get(
+    path="/locations/addresses",
+    service_base_url=Settings().LOCATIONS_SERVICE_URL,
+    response_model=list[Address],
+)
+async def addresses(request: Request):
+    pass
+
+
+@app.post(
+    path="/locations/addresses",
+    service_base_url=Settings().LOCATIONS_SERVICE_URL,
+    response_model=Address,
+    body_key="address_data"
+)
+async def create_address(request: Request, address_data: AddressCreate = Body()):
+    pass
+
+
+@app.delete(
+    path="/locations/addresses/{address_id}",
+    service_base_url=Settings().LOCATIONS_SERVICE_URL,
+)
+async def delete_address(request: Request):
+    pass
+
+
+# =============================== STORES ================================ #
 
 @app.get(
     path="/stores",
