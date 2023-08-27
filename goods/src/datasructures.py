@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CompanyCreate(BaseModel):
@@ -49,6 +49,12 @@ class Subcategory(BaseModel):
     category: str
 
 
+class DescriptionTagCreate(BaseModel):
+    good: str
+    tag: str
+    text: str
+
+
 class GoodCreate(BaseModel):
     title: str
     description: str
@@ -56,6 +62,7 @@ class GoodCreate(BaseModel):
     price: int
     discount: int
     company: str
+    description_tags: list[DescriptionTagCreate] = Field(default_factory=list)
 
 
 class GoodUpdate(BaseModel):
@@ -74,12 +81,6 @@ class Good(BaseModel):
     price: int
     discount: int
     company: str
-
-
-class DescriptionTagCreate(BaseModel):
-    good: str
-    tag: str
-    text: str
 
 
 class DescriptionTagUpdate(BaseModel):
