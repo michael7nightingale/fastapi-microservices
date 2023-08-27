@@ -7,9 +7,8 @@ from src.db.events import create_engine, create_pool
 from src.datasructures import UserModel
 
 
-def create_app():
+def create_app(settings=get_settings()):
     app = FastAPI()
-    settings = get_settings()
     app.include_router(router)
     app.state.auth_manager = AuthManager(
         app=app,
@@ -21,8 +20,8 @@ def create_app():
 
     @app.on_event("startup")
     async def on_startup():
+        """Startup handler."""
         engine = await create_engine(db_url=settings.db_url)
         pool = await create_pool(engine)
         app.state.pool = pool
-
     return app
