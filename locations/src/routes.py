@@ -1,12 +1,19 @@
 from fastapi import APIRouter, Depends, Request, Body
 from fastapi.responses import JSONResponse
 
-from .dependencies import get_city_service, get_country_service, get_country, get_city
-from .datasructures import CityCreate, City, Country, CountryCreate
+from .dependencies import (
+    get_city_service, get_city,
+    get_country_service, get_country,
+    get_address, get_address_service
+)
+from .datasructures import CityCreate, City, Country, CountryCreate, Address, AddressCreate
 from .permissions import permission_required
+
 
 router = APIRouter(prefix="/locations")
 
+
+# =============================== CITIES ============================= #
 
 @router.get("/cities", response_model=list[City])
 async def cities(
@@ -45,8 +52,10 @@ async def delete_city(
     return {"detail": f"City {city} is deleted."}
 
 
+# =============================== COUNTRIES ============================= #
+
 @router.get("/countries")
-async def cities(
+async def countries(
     request: Request,
     country_service=Depends(get_country_service)
 ):
@@ -80,3 +89,42 @@ async def delete_country(
 ):
     await country_service.delete(country_id)
     return {"detail": f"Country {country} is deleted."}
+
+
+# =============================== ADDRESSES ============================= #
+
+@router.get("/addresses", response_model=list[Address])
+async def addresses(
+    request: Request,
+    address_service=Depends(get_address_service)
+):
+    addresses_list = await address_service.all()
+    return addresses_list
+
+
+@router.post("/addresses", response_model=Address)
+@permission_required(is_superuser=True)
+async def create_address(
+    request: Request,
+    address_data: AddressCreate = Body(),
+    address_service=Depends(get_address_service)
+):
+    address = await address_service.create(**address_data.model_dump())
+    if address is None:
+        return JSONResponse(
+            "Invalid data to address creation",
+            400
+        )
+    return address
+
+
+@router.delete("/addresses/{address_id}")
+@permission_required(is_superuser=True)
+async def delete_address(
+    request: Request,
+    address_id: str,
+    address=Depends(get_address),
+    address_service=Depends(get_address_service)
+):
+    await address_service.delete(address_id)
+    return {"detail": f"Address {address} is deleted."}

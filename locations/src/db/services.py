@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.hash import sha256_crypt
 
-from .models import City, Country
+from .models import City, Country, Address
 from .repositories import AsyncSQLAlchemyRepository
 
 
@@ -50,3 +49,7 @@ class CityService(AsyncSQLAlchemyService):
 
 class CountryService(AsyncSQLAlchemyService):
     model = Country
+
+
+class AddressService(AsyncSQLAlchemyService):
+    model = Address

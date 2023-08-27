@@ -1,6 +1,6 @@
 from fastapi import Depends, Request, HTTPException
 
-from .db.services import CityService, CountryService
+from .db.services import CityService, CountryService, AddressService
 
 
 def get_pool(request: Request):
@@ -20,6 +20,7 @@ def get_service(service_class):
 
 get_city_service = get_service(CityService)
 get_country_service = get_service(CountryService)
+get_address_service = get_service(AddressService)
 
 
 async def get_country(country_id: str, country_service: CountryService = Depends(get_country_service)):
@@ -40,3 +41,13 @@ async def get_city(city_id: str, city_service: CityService = Depends(get_city_se
             status_code=404
         )
     return city
+
+
+async def get_address(address_id: str, address_service: AddressService = Depends(get_address_service)):
+    address = await address_service.get(address_id)
+    if address is None:
+        raise HTTPException(
+            detail="Address is not found.",
+            status_code=404
+        )
+    return address

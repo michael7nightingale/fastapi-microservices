@@ -21,6 +21,19 @@ class City(BaseModel):
     country: str
 
 
+class Address(BaseModel):
+    id: str
+    city: str
+    street: str
+    number: str
+
+
+class AddressCreate(BaseModel):
+    city: str
+    street: str
+    number: str
+
+
 class UserModel(BaseModel):
     id: str
     email: str
