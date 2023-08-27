@@ -26,5 +26,21 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
+class TestSettings(BaseSettings):
+    DB_NAME: str = "test.sqlite3"
+
+    ALGORITHM: str = "HS256"
+    SECRET_KEY: str = "as09dalsdk"
+    EXPIRE_MINUTES: int = 60 * 60 * 24
+
+    @property
+    def db_url(self):
+        return "sqlite+aiosqlite:///{name}".format(name=self.DB_NAME)
+
+
 def get_settings() -> Settings:
     return Settings()
+
+
+def get_test_settings() -> TestSettings:
+    return TestSettings()
