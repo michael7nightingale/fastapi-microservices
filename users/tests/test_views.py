@@ -33,6 +33,14 @@ async def test_register_fail_fields(client: AsyncClient):
     assert resp.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
+async def test_register_fail_exists(client: AsyncClient, user1: dict):
+    resp = await client.post(
+        url=router.url_path_for("register"),
+        json=user1
+    )
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+
+
 async def test_token_success(client: AsyncClient):
     body = {
         "email": "password@gmail.com",
