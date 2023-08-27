@@ -1,7 +1,7 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.hash import sha256_crypt
 
-from .models import Order
+from .models import Order, Basket, BasketGood
 from .repositories import AsyncSQLAlchemyRepository
 
 
@@ -46,3 +46,19 @@ class AsyncSQLAlchemyService:
 
 class OrderService(AsyncSQLAlchemyService):
     model = Order
+
+    async def create_order(self, user_id: str, **kwargs):
+        query = select(Basket).where(Basket.user == user_id, Basket.current == True)
+        basket = (await self.repository.session.execute(query)).select_one_or_none()
+        if basket is None:
+            return None
+        else:
+            return await self.create(backet=basket.id, **kwargs)
+
+
+class BasketService(AsyncSQLAlchemyService):
+    model = Basket
+
+
+class BasketGoodService(AsyncSQLAlchemyService):
+    model = BasketGood

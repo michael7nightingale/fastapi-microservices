@@ -2,11 +2,14 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 
+class AddressCreate(BaseModel):
+    city: str
+    street: str
+    number: str
+
+
 class OrderCreate(BaseModel):
-    user: str
-    address: str
-    good: str | None = None
-    is_paid: bool = False
+    address: AddressCreate
     time_created: datetime = Field(default_factory=datetime.utcnow)
     time_finished: datetime = Field(default_factory=datetime.utcnow)
 
@@ -19,6 +22,27 @@ class Order(BaseModel):
     is_paid: bool
     time_created: datetime
     time_finished: datetime
+
+
+class Basket(BaseModel):
+    user: str
+    current: bool
+
+
+class BasketGoodCreate(BaseModel):
+    good: str
+    amount: int
+
+
+class BasketGoodUpdate(BaseModel):
+    amount: int | None = None
+
+
+class BasketGood(BaseModel):
+    id: str
+    basket: str
+    amount: str
+    good: str
 
 
 class UserModel(BaseModel):

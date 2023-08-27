@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
+    GATEWAY_URL: str
+
     ALGORITHM: str
     SECRET_KEY: str
     EXPIRE_MINUTES: int

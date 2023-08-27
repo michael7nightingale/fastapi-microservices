@@ -7,9 +7,8 @@ from src.routes import router
 from src.db.events import create_engine, create_pool
 
 
-def create_app():
+def create_app(settings=get_settings()):
     app = FastAPI()
-    settings = get_settings()
     app.include_router(router)
     app.state.auth_manager = AuthManager(
         app=app,

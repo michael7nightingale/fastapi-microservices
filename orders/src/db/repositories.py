@@ -13,6 +13,14 @@ class AsyncSQLAlchemyRepository:
         self._model = model
         self._session = session
 
+    @property
+    def session(self):
+        return self._session
+
+    @property
+    def model(self):
+        return self._model
+
     async def create(self, **kwargs) -> BaseAlchemyModel | None:
         """Create new object in the table"""
         try:

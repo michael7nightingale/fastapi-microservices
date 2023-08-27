@@ -166,6 +166,7 @@ def upgrade() -> None:
         "baskets",
         sa.Column('user', sa.String(length=200), nullable=False),
         sa.Column('id', sa.String(length=200), nullable=False),
+        sa.Column("current", sa.Boolean(), default=False),
         sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['user'], ['users.id'], ),
         sa.UniqueConstraint('user')
@@ -182,6 +183,7 @@ def upgrade() -> None:
 
     op.create_table(
         "orders",
+        sa.Column('user', sa.String(length=200), nullable=False),
         sa.Column('basket', sa.String(length=200), nullable=False),
         sa.Column('address', sa.String(length=200), nullable=False),
         sa.Column("is_paid", sa.Boolean(), nullable=False, default=False),
@@ -190,6 +192,7 @@ def upgrade() -> None:
         sa.Column('time_finished', sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['basket'], ['baskets.id'], ),
+        sa.ForeignKeyConstraint(['user'], ['users.id'], ),
         sa.ForeignKeyConstraint(['address'], ['addresses.id'], ),
     )
 
