@@ -36,10 +36,8 @@ async def get_order(request: Request, order_id: str, order_service=Depends(get_o
 async def get_basket(request: Request, basket_service=Depends(get_basket_service)):
     basket = await basket_service.get(user=request.user.id, current=True)
     if basket is None:
-        raise HTTPException(
-            404,
-            "There is no such basket.",
-        )
+        new_basket = await basket_service.create(user=request.user.id, current=True)
+        return new_basket
     return basket
 
 

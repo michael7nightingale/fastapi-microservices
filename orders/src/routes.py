@@ -4,7 +4,7 @@ from fastapi_authtools import login_required
 
 from .dependencies import (
     get_order_service, get_order,
-    get_basket_service, get_basket,
+    get_basket,
     get_basket_goods_service, get_basket_goods, get_basket_good
 
 )
@@ -14,7 +14,6 @@ from .datasructures import (
 
 )
 from .connectors import create_address
-from .permissions import permission_required
 
 
 router = APIRouter(prefix="/orders")
@@ -105,6 +104,11 @@ async def orders(
         address=await address_response_data['id'],
         **order_data.model_dump(exclude={"address"}),
     )
+    if order_ is None:
+        return JSONResponse(
+            {"detail": "Cannot create order."},
+            status_code=400
+        )
     return order_
 
 

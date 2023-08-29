@@ -1,4 +1,4 @@
-from sqlalchemy import String, Column, ForeignKey, Boolean, DateTime, Text, Integer
+from sqlalchemy import String, Column, ForeignKey, Text, Integer
 
 from .events import Base
 from ..base import SQLAlchemyModel

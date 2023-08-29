@@ -1,6 +1,5 @@
-from typing import Mapping
-
 import aiohttp
+from typing import Mapping
 
 from src.config import get_settings
 
