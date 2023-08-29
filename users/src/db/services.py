@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from passlib.hash import sha256_crypt
 
@@ -47,17 +49,18 @@ class AsyncSQLAlchemyService:
 class UserService(AsyncSQLAlchemyService):
     model = User
 
-    async def login(self, email: str, password: str):
+    async def login(self, email: str, password: str) -> Optional["User"]:
         user = await self.get(email=email)
         if user is not None:
             if sha256_crypt.verify(password, user.password):
                 return user
 
-    async def create(self, **kwargs):
+    async def register(self, **kwargs):
         if "password" in kwargs:
             kwargs.update(
                 password=sha256_crypt.hash(kwargs['password']),
                 is_staff=False,
                 is_superuser=False
             )
+
         return await super().create(**kwargs)

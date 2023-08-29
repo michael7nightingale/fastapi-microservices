@@ -30,7 +30,8 @@ async def register(
     user_data: UserRegister = Body(),
     user_service=Depends(get_user_service)
 ):
-    user = await user_service.create(**user_data.model_dump())
+
+    user = await user_service.register(**user_data.model_dump())
     if user is None:
         return JSONResponse(
             {"detail": "User with such email already exists."},

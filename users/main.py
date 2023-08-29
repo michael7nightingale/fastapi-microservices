@@ -5,6 +5,7 @@ from src.config import get_settings
 from src.routes import router
 from src.db.events import create_engine, create_pool
 from src.datasructures import UserModel
+from src.db.admin import register_views
 
 
 def create_app(settings=get_settings()):
@@ -24,4 +25,6 @@ def create_app(settings=get_settings()):
         engine = await create_engine(db_url=settings.db_url)
         pool = await create_pool(engine)
         app.state.pool = pool
+        register_views(app, engine)
+
     return app
