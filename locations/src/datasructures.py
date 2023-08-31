@@ -34,6 +34,12 @@ class AddressCreate(BaseModel):
     number: str
 
 
+class AddressUpdate(BaseModel):
+    city: str | None = None
+    street: str | None = None
+    number: str | None = None
+
+
 class UserModel(BaseModel):
     id: str
     email: str

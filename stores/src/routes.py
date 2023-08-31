@@ -47,17 +47,6 @@ async def posts(
     return posts_list
 
 
-@router.post("/posts", response_model=Post)
-@permission_required(is_superuser=True)
-async def create_post(
-    request: Request,
-    post_data: PostCreate = Body(),
-    post_service=Depends(get_post_service)
-):
-    new_post = await post_service.create(**post_data.model_dump())
-    return new_post
-
-
 @router.get("/employees", response_model=list[Employee])
 @permission_required(is_staff=True)
 async def employees(

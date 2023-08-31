@@ -6,7 +6,7 @@ from .dependencies import (
     get_country_service, get_country,
     get_address, get_address_service
 )
-from .datasructures import CityCreate, City, Country, CountryCreate, Address, AddressCreate
+from .datasructures import City, Country, Address, AddressCreate, AddressUpdate
 from .permissions import permission_required
 
 
@@ -24,37 +24,9 @@ async def cities(
     return cities_list
 
 
-@router.post("/cities", response_model=City)
-# @permission_required(is_superuser=True)
-async def create_city(
-    request: Request,
-    city_data: CityCreate = Body(),
-    city_service=Depends(get_city_service)
-):
-    city = await city_service.create(**city_data.model_dump())
-    if city is None:
-        return JSONResponse(
-            "Invalid data to city creation",
-            400
-        )
-    return city
-
-
-@router.delete("/cities/{city_id}")
-@permission_required(is_superuser=True)
-async def delete_city(
-    request: Request,
-    city_id: str,
-    city=Depends(get_city),
-    city_service=Depends(get_city_service)
-):
-    await city_service.delete(city_id)
-    return {"detail": f"City {city} is deleted."}
-
-
 # =============================== COUNTRIES ============================= #
 
-@router.get("/countries")
+@router.get("/countries", response_model=list[Country])
 async def countries(
     request: Request,
     country_service=Depends(get_country_service)
@@ -63,47 +35,18 @@ async def countries(
     return countries_list
 
 
-@router.post("/countries", response_model=Country)
-@permission_required(is_superuser=True)
-async def create_country(
+@router.get("/countries/{country_id}", response_model=Country)
+async def country(
     request: Request,
-    country_data: CountryCreate = Body(),
-    country_service=Depends(get_country_service)
+    country_service=Depends(get_country_service),
+    country_=Depends(get_country),
 ):
-    country = await country_service.create(**country_data.model_dump())
-    if country is None:
-        return JSONResponse(
-            "Invalid data to city creation",
-            400
-        )
-    return country
-
-
-@router.delete("/countries/{country_id}")
-@permission_required(is_superuser=True)
-async def delete_country(
-    request: Request,
-    country_id: str,
-    country=Depends(get_country),
-    country_service=Depends(get_country_service)
-):
-    await country_service.delete(country_id)
-    return {"detail": f"Country {country} is deleted."}
+    return country_
 
 
 # =============================== ADDRESSES ============================= #
 
-@router.get("/addresses", response_model=list[Address])
-async def addresses(
-    request: Request,
-    address_service=Depends(get_address_service)
-):
-    addresses_list = await address_service.all()
-    return addresses_list
-
-
 @router.post("/addresses", response_model=Address)
-@permission_required(is_superuser=True)
 async def create_address(
     request: Request,
     address_data: AddressCreate = Body(),
@@ -118,13 +61,34 @@ async def create_address(
     return address
 
 
-@router.delete("/addresses/{address_id}")
-@permission_required(is_superuser=True)
-async def delete_address(
+@router.get("/addresses/{address_id}", response_model=Address)
+async def address(
     request: Request,
     address_id: str,
-    address=Depends(get_address),
+    address_=Depends(get_address),
     address_service=Depends(get_address_service)
 ):
-    await address_service.delete(address_id)
-    return {"detail": f"Address {address} is deleted."}
+    return address_
+
+
+@router.patch("/addresses/{address_id}", response_model=Address)
+async def address(
+    request: Request,
+    address_id: str,
+    address_=Depends(get_address),
+    address_data: AddressUpdate = Body(),
+    address_service=Depends(get_address_service)
+):
+    await address_service.update(address_.id, **address_data.model_dump())
+    return address_
+
+
+@router.delete("/addresses/{address_id}")
+async def address(
+    request: Request,
+    address_id: str,
+    address_=Depends(get_address),
+    address_service=Depends(get_address_service)
+):
+    await address_service.delete(address_.id)
+    return {"Address is deleted successfully."}
