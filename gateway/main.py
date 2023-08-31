@@ -3,7 +3,7 @@ from fastapi_authtools.models import EmailPasswordToken
 
 from core import GateWay
 from config import Settings
-from datastructures.users import UserRegister, Token, TokenCreate
+from datastructures.users import UserRegister, Token, TokenCreate, UserModel
 from datastructures.locations import City, CityCreate, CountryCreate, Country, AddressCreate, Address
 from datastructures.stores import Post, PostCreate, Store, StoreCreate, EmployeeCreate, Employee
 
@@ -16,7 +16,7 @@ app = GateWay()
 @app.post(
     path="/users/register",
     service_base_url=Settings().USER_SERVICE_URL,
-    response_model=UserRegister,
+    response_model=UserModel,
     body_key="user_data"
 )
 async def register(request: Request, user_data: UserRegister = Body()):
