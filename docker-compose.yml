@@ -16,7 +16,7 @@ services:
 
   gateway:
     build:
-      context: ./gateway
+      context: ./backend/gateway
     ports:
       - "8001:8001"
     command: >
@@ -34,7 +34,7 @@ services:
 
   users:
     build:
-      context: ./users
+      context: ./backend/users
     ports:
       - "8002:8002"
     command: >
@@ -44,7 +44,7 @@ services:
 
   locations:
     build:
-      context: ./locations
+      context: ./backend/locations
     ports:
       - "8003:8003"
     command: >
@@ -54,7 +54,7 @@ services:
 
   stores:
     build:
-      context: ./stores
+      context: ./backend/stores
     ports:
       - "8004:8004"
     command: >
@@ -64,7 +64,7 @@ services:
 
   goods:
     build:
-      context: ./goods
+      context: ./backend/goods
     ports:
       - "8005:8005"
     command: >
@@ -74,7 +74,7 @@ services:
 
   orders:
     build:
-      context: ./orders
+      context: ./backend/orders
     ports:
       - "8006:8006"
     command: >
