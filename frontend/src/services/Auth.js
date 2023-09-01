@@ -24,3 +24,8 @@ export function logoutUser(){
     localStorage.removeItem("user");
     localStorage.removeItem("userData")
 }
+
+
+export function getUser(){
+    return localStorage.getItem("userData");
+}
