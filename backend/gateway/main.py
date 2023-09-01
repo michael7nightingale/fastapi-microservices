@@ -1,6 +1,7 @@
 from fastapi import Request, Body
 from fastapi_authtools.models import EmailPasswordToken
 
+from admin.routes import admin_router
 from core import GateWay
 from config import Settings
 from datastructures.users import UserRegister, Token, TokenCreate, UserModel
@@ -188,3 +189,6 @@ async def create_employee(
     employee_data: EmployeeCreate = Body(),
 ):
     pass
+
+
+app.include_router(admin_router)

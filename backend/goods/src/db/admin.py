@@ -1,7 +1,7 @@
 from sqladmin import ModelView, Admin
 from starlette.middleware import Middleware
 
-from .models import Good, Subcategory, Category, Company, DescriptionTag
+from ..db.models import Good, Subcategory, Category, Company, DescriptionTag
 from ..middleware import AuthenticationMiddleware
 
 

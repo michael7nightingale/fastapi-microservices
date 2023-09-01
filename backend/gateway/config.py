@@ -10,6 +10,10 @@ class Settings(BaseSettings):
 
     DB_URL: str
 
+    SUPERUSER_LOGIN: str
+    SUPERUSER_PASSWORD: str
+    SUPERUSER_TOKEN: str
+
     class Config:
         env_file = ".env"
 
