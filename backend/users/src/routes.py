@@ -1,5 +1,6 @@
 from fastapi import Request, APIRouter, Body, Depends
 from fastapi.responses import JSONResponse
+from fastapi_authtools import login_required
 from fastapi_authtools.models import EmailPasswordToken
 from fastapi_authtools.exceptions import raise_invalid_credentials
 
@@ -38,3 +39,9 @@ async def register(
             400
         )
     return user
+
+
+@router.post("/me", response_model=UserModel)
+@login_required
+async def me(request: Request):
+    return request.user

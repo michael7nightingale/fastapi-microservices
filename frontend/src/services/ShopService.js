@@ -4,15 +4,17 @@ import {buildUrl} from "@/services/Base";
 
 
 export function getGoodsList(){
-    let data = {
-        username: username,
-        password: password
-    }
-    return axios.post(
-         buildUrl('auth/token/'),
-        data,
+    return axios.get(
+        buildUrl('goods/goods'),
         {
             headers: getHeaders()
         }
+    )
+}
+
+
+export function getGood(goodId){
+    return axios.get(
+        buildUrl(`goods/goods/${goodId}`)
     )
 }

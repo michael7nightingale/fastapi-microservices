@@ -20,7 +20,7 @@ from .datasructures import (
 from .permissions import permission_required
 
 
-router = APIRouter(prefix="")
+router = APIRouter(prefix="/goods")
 
 
 # ============================== COMPANIES ============================ #

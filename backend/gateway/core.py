@@ -17,6 +17,7 @@ class GateWay(FastAPI):
         path: str,
         service_base_url: str,
         response_model: Type[BaseModel] | None = None,
+        response_list: bool = False,
         body_key: str | None = None,
     ):
         if not (path[0] == "/" and path[:2] != "//"):
@@ -33,14 +34,16 @@ class GateWay(FastAPI):
                 else:
                     data = None
                 service_url = service_base_url + str(request.url.path)
-
                 response_data = await make_request(
                     method=method,
                     url=service_url,
                     data=data,
                 )
                 if response_model:
-                    response_data = response_model(**response_data)
+                    if response_list:
+                        response_data = [response_model(**el) for el in response_data]
+                    else:
+                        response_data = response_model(**response_data)
                 return response_data
 
             return inner

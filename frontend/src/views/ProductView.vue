@@ -1,11 +1,37 @@
 <script>
+import {getGood} from "@/services/ShopService";
+
 export default {
   name: "ProductView",
   data(){
     return{
+      goodId: null,
+      good: {},
+      amount: 1,
 
     }
   },
+
+  mounted(){
+    this.goodId = this.$route.params.id;
+    getGood(this.goodId)
+        .then((response) => {
+            this.good = response.data;
+        })
+
+  },
+
+   methods: {
+    showPrice(price, discount){
+      return price * (1 - (discount / 100))
+    },
+
+     amountInput(value){
+      this.amount = value
+    },
+
+
+  }
 
 }
 </script>
@@ -17,9 +43,9 @@ export default {
           <div>
             <div class="">
               <div class="product-breadcroumb">
-                <a href="">Home</a>
+                <router-link :to="{name: 'shop'}">Shop</router-link>
                 <a href="">Category Name</a>
-                <a href="">Sony Smart TV - 2015</a>
+                <a>{{ good.title }}</a>
               </div>
               <div class="row">
                 <div class="col-sm-6">
@@ -36,13 +62,16 @@ export default {
                 </div>
                 <div class="col-sm-6">
                   <div class="product-inner">
-                    <h2 class="product-name">Sony Smart TV - 2015</h2>
-                    <div class="product-inner-price">
-                      <ins>$700.00</ins> <del>$100.00</del>
+                    <h2 class="product-name">{{ good.title }}</h2>
+                    <div v-if="good.discount" class="product-carousel-price">
+                      <ins>{{ showPrice(good.price, good.discount) }}</ins> <del>{{ good.price }}</del>
+                    </div>
+                    <div v-else class="product-carousel-price">
+                      <ins>{{ good.price }}</ins>
                     </div>
                     <form action="" class="cart">
                       <div class="quantity">
-                        <input type="number" size="4" class="input-text qty text" title="Qty" value="1" name="quantity" min="1" step="1">
+                        <input type="number" size="4" class="input-text qty text" :value="amount" min="1" step="1" @input="amountInput($event.target.value)">
                       </div>
                       <button class="add_to_cart_button" type="submit">Add to cart</button>
                     </form>
@@ -57,8 +86,7 @@ export default {
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane fade in active" id="home">
                           <h2>Product Description</h2>
-                          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tristique, diam in consequat iaculis, est purus iaculis mauris, imperdiet facilisis ante ligula at nulla. Quisque volutpat nulla risus, id maximus ex aliquet ut. Suspendisse potenti. Nulla varius lectus id turpis dignissim porta. Quisque magna arcu, blandit quis felis vehicula, feugiat gravida diam. Nullam nec turpis ligula. Aliquam quis blandit elit, ac sodales nisl. Aliquam eget dolor eget elit malesuada aliquet. In varius lorem lorem, semper bibendum lectus lobortis ac.</p>
-                          <p>Mauris placerat vitae lorem gravida viverra. Mauris in fringilla ex. Nulla facilisi. Etiam scelerisque tincidunt quam facilisis lobortis. In malesuada pulvinar neque a consectetur. Nunc aliquam gravida purus, non malesuada sem accumsan in. Morbi vel sodales libero.</p>
+                          <p>{{ good.description }}</p>
                         </div>
                         <div role="tabpanel" class="tab-pane fade" id="profile">
                           <h2>Reviews</h2>

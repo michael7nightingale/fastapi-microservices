@@ -34,7 +34,7 @@ class AuthenticationBackend:
         raise authentication.AuthenticationError(Responses.invalid_credentials)
 
     def get_token(self, conn: HTTPConnection) -> str:
-        token = conn.headers.get("authorization") or conn.headers.get("Authorization")
+        token = conn.cookies.get("authorization") or conn.cookies.get("Authorization")
         return token
 
     async def authenticate(

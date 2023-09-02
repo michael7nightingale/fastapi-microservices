@@ -8,7 +8,7 @@ from ..middleware import AuthenticationMiddleware
 class GoodView(ModelView, model=Good):
     column_list = [
         Good.id, Good.title, Good.description,
-        Good.price, Good.discount, Good.company,
+        Good.price, Good.discount,
         Good.subcategory
     ]
 

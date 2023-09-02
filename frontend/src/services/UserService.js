@@ -3,39 +3,32 @@ import {getHeaders} from "@/services/Auth";
 import {buildUrl} from "@/services/Base";
 
 
-export function loginUser(username, password){
+export function loginUser(email, password){
     let data = {
-        username: username,
+        email: email,
         password: password
     }
     return axios.post(
-         buildUrl('auth/token/'),
+         buildUrl('users/token/'),
         data
     )
 }
 
 
 
-export function registerUser(email, username, password){
-    let data = {
-        email: email,
-        username: username,
-        password: password
-    }
+export function registerUser(data){
     return axios.post(
-        buildUrl('auth/register/'),
+        buildUrl('users/register/'),
         data
     )
-
 }
 
 
 export function meUser(){
     return axios.get(
-        buildUrl('auth/me/'),
+        buildUrl('users/me/'),
         {
             headers: getHeaders()
         }
     )
-
 }

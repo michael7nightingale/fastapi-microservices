@@ -1,24 +1,28 @@
 <script>
 import {registerUser} from "@/services/UserService";
-import OAuth from "@/components/OAuth.vue";
 
 export default {
   name: "LoginView",
-  components: {OAuth},
   data() {
     return {
-      username: null,
+      firstName: null,
+      lastName: null,
       password: null,
       email: null
     }
   },
   methods: {
     registerClick() {
-      let data;
-      registerUser(this.email, this.username, this.password)
-          .then(responseData => {
-            data = responseData.data;
-            console.log(data);
+      let data = {
+        email: this.email,
+        password: this.password,
+        first_name: this.firstName,
+        last_name: this.lastName
+      };
+      registerUser(data)
+          .then(response => {
+            let responseData = response.data;
+            console.log(responseData)
             this.$router.push("/auth/login")
           })
           .catch((error) => {
@@ -28,8 +32,11 @@ export default {
     emailInput(value) {
       this.email = value;
     },
-    usernameInput(value) {
-      this.username = value;
+    firstNameInput(value) {
+      this.firstName = value;
+    },
+    lastNameInput(value) {
+      this.lastName = value;
     },
     passwordInput(value) {
       this.password = value;
@@ -51,8 +58,11 @@ export default {
     <div class="form-item">
       <input type="email" :value="email" @input="emailInput($event.target.value)" placeholder="Email" id="email" class="form-style" autocomplete="off"/>
     </div>
-    <div class="form-item">
-      <input type="text" placeholder="Username" :value="username" @input="usernameInput($event.target.value)" class="form-style" autocomplete="off"/>
+     <div class="form-item">
+      <input type="text" :value="firstName" @input="firstNameInput($event.target.value)" placeholder="First name" id="firstName" class="form-style" autocomplete="off"/>
+    </div>
+     <div class="form-item">
+      <input type="text" :value="lastName" @input="lastNameInput($event.target.value)" placeholder="Last name" id="lastName" class="form-style" autocomplete="off"/>
     </div>
     <div class="form-item">
       <input type="password" placeholder="Password" :value="password" @input="passwordInput($event.target.value)" id="password" class="form-style" />
@@ -71,5 +81,5 @@ export default {
 </template>
 
 <style>
-@import '../../assets/css/login.css';
+@import '../assets/css/login.css';
 </style>

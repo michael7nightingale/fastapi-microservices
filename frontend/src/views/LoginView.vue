@@ -6,14 +6,14 @@ export default {
   name: "LoginView",
   data(){
     return{
-      username: null,
+      email: null,
       password: null,
     }
   },
   methods: {
     loginClick(){
         let data;
-        loginUser(this.username, this.password)
+        loginUser(this.email, this.password)
             .then((response) => {
               data = response.data;
               setUser(data.access_token)
@@ -24,8 +24,8 @@ export default {
             })
     },
 
-    usernameInput(value){
-      this.username = value;
+    emailInput(value){
+      this.email = value;
     },
     passwordInput(value){
       this.password = value;
@@ -40,9 +40,11 @@ export default {
 <div id="form">
     <h3 align="center">Log in</h3>
     <div class="form-item">
-      <input type="text" placeholder="Username" :value="username" @input="usernameInput($event.target.value)" class="form-style" autocomplete="off"/>
+      <label for="email">Email</label>
+      <input type="text" placeholder="Email" :value="email" @input="emailInput($event.target.value)" id="email" class="form-style" autocomplete="off"/>
     </div>
     <div class="form-item">
+      <label for="password">Password</label>
       <input type="password" placeholder="Password" :value="password" @input="passwordInput($event.target.value)" id="password" class="form-style" />
     </div>
     <div class="form-item row">

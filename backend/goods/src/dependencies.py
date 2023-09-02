@@ -69,7 +69,7 @@ async def get_good(
         good_id: str,
         good_service=Depends(get_good_service)
 ) -> Good | None:
-    good = await good_service.get_or_none(good_id)
+    good = await good_service.get(id=good_id)
     if good is None:
         raise HTTPException(
             detail="Good does not exists.",

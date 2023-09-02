@@ -29,7 +29,7 @@ class Good(SQLAlchemyModel, Base):
     __tablename__ = "goods"
 
     title = Column(String(200), index=True)
-    company = Column(String(200), ForeignKey("companies.id"))
+    # company = Column(String(200), ForeignKey("companies.id"))
     description = Column(Text())
     subcategory = Column(String(200), ForeignKey("subcategories.id"))
     price = Column(Integer())
