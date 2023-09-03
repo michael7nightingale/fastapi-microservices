@@ -37,6 +37,7 @@ export default {
                         <ul>
                             <li><router-link :to="{name: 'homepage'}"><i class=""></i>Home</router-link></li>
                             <li><router-link :to="{name: 'shop'}"><i class=""></i>Shop</router-link></li>
+                           <li><router-link :to="{name: 'navigation'}"><i class=""></i>Navigation</router-link></li>
                              <li v-if="User"><a><i class="fa fa-heart"></i> Wishlist</a></li>
                           <li v-if="User"><a><i class="fa fa-user"></i> My Account</a></li>
                             <li v-if="User">

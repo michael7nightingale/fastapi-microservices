@@ -1,17 +1,27 @@
 <script>
-import {getGoodsList} from "@/services/ShopService";
+import {getCategory, getGoodsListByCategory} from "@/services/ShopService";
 
 export default {
   name: "ShopView",
   data(){
     return{
       goods: [],
+      categoryId: null,
+      category: {},
+      subcategories: [],
 
     }
   },
 
   mounted() {
-    getGoodsList()
+    this.categoryId = this.$route.params.category_id;
+    getCategory(this.categoryId)
+        .then((response) => {
+          let data = response.data;
+          this.category = data;
+          this.subcategories = data.subcategories
+        })
+    getGoodsListByCategory(this.categoryId)
         .then((response) => {
           this.goods = response.data;
         })
@@ -30,11 +40,11 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+  <div class="container">
     <div class="product-breadcroumb">
       <router-link :to="{name: 'shop'}">Shop</router-link>
+      <a class="active-link" href="">{{ category.title }}</a>
     </div>
-
     <div class="single-product-area">
         <div class="zigzag-bottom"></div>
         <div class="container">
@@ -86,7 +96,8 @@ export default {
             </div>
         </div>
     </div>
-    </div>
+  </div>
+
 </template>
 
 <style>

@@ -17,7 +17,7 @@ export default {
             .then((response) => {
               data = response.data;
               setUser(data.access_token)
-              this.$router.push("/");
+              this.$router.push({name: "homepage"});
             })
             .catch((error) => {
               alert(error.response.data.detail);

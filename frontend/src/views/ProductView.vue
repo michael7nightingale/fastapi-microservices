@@ -1,5 +1,6 @@
 <script>
-import {getGood} from "@/services/ShopService";
+import {getGood, getGoodDescriptionTags} from "@/services/ShopService";
+import {getUser} from "@/services/Auth";
 
 export default {
   name: "ProductView",
@@ -7,8 +8,17 @@ export default {
     return{
       goodId: null,
       good: {},
+      category: {},
+      subcategory: {},
+      descriptionTags: {},
       amount: 1,
 
+    }
+  },
+
+  computed: {
+    User(){
+      return getUser();
     }
   },
 
@@ -16,9 +26,16 @@ export default {
     this.goodId = this.$route.params.id;
     getGood(this.goodId)
         .then((response) => {
-            this.good = response.data;
+            let data = response.data;
+            this.good = data;
+            this.category = data.category;
+            this.subcategory = data.subcategory;
         })
 
+    getGoodDescriptionTags(this.goodId)
+        .then((response) => {
+          this.descriptionTags = response.data;
+        })
   },
 
    methods: {
@@ -30,6 +47,14 @@ export default {
       this.amount = value
     },
 
+     addCartClick(){
+      if (!this.User){
+          this.$router.push({name: "login"})
+      }
+      else{
+          this.$router.push({name: "cart"})
+      }
+     },
 
   }
 
@@ -44,8 +69,11 @@ export default {
             <div class="">
               <div class="product-breadcroumb">
                 <router-link :to="{name: 'shop'}">Shop</router-link>
-                <a href="">Category Name</a>
-                <a>{{ good.title }}</a>
+                <router-link :to="{name: 'category', params: {category_id: `${category.id}`}}">{{ category.title }}</router-link>
+                <router-link
+                    :to="{name: 'subcategory', params: {category_id: `${category.id}`, subcategory_id: `${subcategory.id}`}}"
+                >{{ subcategory.title }}</router-link>
+                <a class="active-link" href="">{{ good.title }}</a>
               </div>
               <div class="row">
                 <div class="col-sm-6">
@@ -73,22 +101,31 @@ export default {
                       <div class="quantity">
                         <input type="number" size="4" class="input-text qty text" :value="amount" min="1" step="1" @input="amountInput($event.target.value)">
                       </div>
-                      <button class="add_to_cart_button" type="submit">Add to cart</button>
+                      <button class="add_to_cart_button" type="button" @click="addCartClick">Add to cart</button>
                     </form>
                     <div class="product-inner-category">
                       <p>Category: <a href="">Summer</a>. Tags: <a href="">awesome</a>, <a href="">best</a>, <a href="">sale</a>, <a href="">shoes</a>. </p>
                     </div>
                     <div role="tabpanel">
                       <ul class="product-tab" role="tablist">
-                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Description</a></li>
-                        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Reviews</a></li>
+                        <li role="presentation" class="active"><a href="#description" aria-controls="description" role="tab" data-toggle="tab">Description</a></li>
+                        <li role="presentation"><a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Specifications</a></li>
+                        <li role="presentation"><a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">Reviews</a></li>
                       </ul>
                       <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade in active" id="home">
+                        <div role="tabpanel" class="tab-pane fade in active" id="description">
                           <h2>Product Description</h2>
                           <p>{{ good.description }}</p>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" id="profile">
+                         <div role="tabpanel" class="tab-pane fade in" id="specifications">
+                          <p
+                              v-for="descriptionTag in descriptionTags"
+                              :key="descriptionTag"
+                          >
+                          {{ `${descriptionTag.tag}: ${descriptionTag.text}` }}
+                          </p>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="reviews">
                           <h2>Reviews</h2>
                           <div class="submit-review">
                             <p><label for="name">Name</label> <input name="name" type="text"></p>

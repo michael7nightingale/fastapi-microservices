@@ -774,6 +774,14 @@ input[type="submit"]:hover, button[type=submit]:hover {background-color: #222}
 .product-breadcroumb > a:last-child::before {
     display: none;
 }
+
+.active-link{
+    color: black;
+    outline: 0;
+    border: none;
+}
+
+
 .product-main-img {
     margin-bottom: 20px;
 }

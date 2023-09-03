@@ -5,6 +5,9 @@ import ShopView from "@/views/ShopView.vue";
 import ProductView from "@/views/ProductView.vue";
 import CartView from "@/views/CartView.vue";
 import RegisterView from "@/views/RegisterView.vue";
+import CategoryView from "@/views/CategoryView.vue";
+import SubcategoryView from "@/views/SubcategoryView.vue";
+import NavigationView from "@/views/NavigationView.vue";
 
 
 const routes = [
@@ -24,9 +27,24 @@ const routes = [
     component: RegisterView
   },
   {
+    path: "/navigation",
+    name: "navigation",
+    component: NavigationView
+  },
+  {
     path: '/shop',
     name: 'shop',
     component: ShopView
+  },
+  {
+    path: '/shop/:category_id',
+    name: 'category',
+    component: CategoryView
+  },
+  {
+    path: '/shop/:category_id/:subcategory_id',
+    name: 'subcategory',
+    component: SubcategoryView
   },
   {
     path: '/product/:id',
