@@ -8,7 +8,7 @@ from config import Settings
 from datastructures.users import UserRegister, Token, TokenCreate, UserModel
 from datastructures.locations import City, CityCreate, CountryCreate, Country, AddressCreate, Address
 from datastructures.stores import Store
-from datastructures.goods import Good
+from datastructures.goods import GoodFull, Category, Subcategory, CategoryFull, SubcategoryFull, DescriptionTag
 
 
 app = GateWay()
@@ -101,9 +101,76 @@ async def stores(
 # ============================= GOODS =========================== #
 
 @app.get(
+    path="/goods/categories",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=Category,
+    response_list=True
+)
+async def categories(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/categories/{category_id}",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=CategoryFull,
+)
+async def category(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/categories/{category_id}/goods",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=GoodFull,
+    response_list=True
+)
+async def goods_by_category(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/subcategories",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=Subcategory,
+    response_list=True
+)
+async def subcategories(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/subcategories/{subcategory_id}",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=SubcategoryFull,
+)
+async def subcategory(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/subcategories/{subcategory_id}/goods",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=GoodFull,
+    response_list=True
+)
+async def goods_by_subcategory(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/goods/{good_id}",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=GoodFull,
+)
+async def good(request: Request):
+    pass
+
+
+@app.get(
     path="/goods/goods",
     service_base_url=Settings().GOODS_SERVICE_URL,
-    response_model=Good,
+    response_model=GoodFull,
     response_list=True
 )
 async def goods(request: Request):
@@ -113,9 +180,19 @@ async def goods(request: Request):
 @app.get(
     path="/goods/goods/{good_id}",
     service_base_url=Settings().GOODS_SERVICE_URL,
-    response_model=Good,
+    response_model=GoodFull,
 )
 async def good(request: Request):
+    pass
+
+
+@app.get(
+    path="/goods/goods/{good_id}/description-tags",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    response_model=DescriptionTag,
+    response_list=True
+)
+async def good_description_tags(request: Request):
     pass
 
 

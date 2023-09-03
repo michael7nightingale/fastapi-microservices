@@ -1,18 +1,6 @@
 from pydantic import BaseModel, Field
 
 
-class CompanyCreate(BaseModel):
-    title: str
-    description: str
-    country: str
-
-
-class CompanyUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    country: str | None = None
-
-
 class Company(BaseModel):
     id: str
     title: str
@@ -20,33 +8,25 @@ class Company(BaseModel):
     country: str
 
 
-class CategoryCreate(BaseModel):
-    title: str
-
-
-class CategoryUpdate(BaseModel):
-    title: str | None = None
-
-
 class Category(BaseModel):
     id: str
     title: str
-
-
-class SubcategoryCreate(BaseModel):
-    title: str
-    category: str
-
-
-class SubcategoryUpdate(BaseModel):
-    title: str | None = None
-    category: str | None = None
 
 
 class Subcategory(BaseModel):
     id: str
     title: str
     category: str
+
+
+class SubcategoryFull(Subcategory):
+    id: str
+    title: str
+    category: Category
+
+
+class CategoryFull(Category):
+    subcategories: list[Subcategory]
 
 
 class DescriptionTagCreate(BaseModel):
@@ -80,7 +60,11 @@ class Good(BaseModel):
     subcategory: str
     price: int
     discount: int
-    # company: str
+
+
+class GoodFull(Good):
+    subcategory: Subcategory
+    category: Category
 
 
 class DescriptionTagUpdate(BaseModel):
