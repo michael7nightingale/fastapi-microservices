@@ -80,6 +80,18 @@ class DescriptionTag(BaseModel):
     text: str
 
 
+class BasketGood(BaseModel):
+    good: Good
+    amount: int = Field(default=1)
+    basket: str
+
+
+class Basket(BaseModel):
+    id: str
+    user: str
+    basket_goods: list[BasketGood] = Field(default_factory=list)
+
+
 class UserModel(BaseModel):
     id: str
     email: str
