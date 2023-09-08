@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from typing import TypeVar, Type
 
-from .models import Company, Category, Subcategory, Good, DescriptionTag
+from .models import Company, Category, Subcategory, Good, DescriptionTag, Basket, BasketGood, Order
 
 
 BaseAlchemyModel = TypeVar("BaseAlchemyModel", bound=DeclarativeBase)
@@ -33,7 +33,7 @@ class AsyncSQLAlchemyRepository:
             return new_obj
         except IntegrityError:
             await self.session.rollback()
-            return None
+            return
 
     async def get(self, *args, **kwargs) -> BaseAlchemyModel | None:
         """Get object by pk (id) or other."""
@@ -69,15 +69,15 @@ class AsyncSQLAlchemyRepository:
         await self.session.execute(query)
         await self.commit()
 
-    async def commit(self):
+    async def commit(self) -> None:
         """Comfortably commit changes"""
         await self.session.commit()
 
-    async def add(self, obj):
+    async def add(self, obj) -> None:
         """Comfortably add object"""
         self.session.add(obj)
 
-    async def save(self, obj):
+    async def save(self, obj) -> None:
         await self.add(obj)
         await self.commit()
 
@@ -85,7 +85,7 @@ class AsyncSQLAlchemyRepository:
 class CategoryRepository(AsyncSQLAlchemyRepository):
     _model = Category
 
-    async def get_with_subcategories(self, id_):
+    async def get_with_subcategories(self, id_) -> dict:
         query = (
             select(Category, Subcategory)
             .join(Subcategory, Subcategory.category == Category.id)
@@ -104,7 +104,7 @@ class CategoryRepository(AsyncSQLAlchemyRepository):
 class SubcategoryRepository(AsyncSQLAlchemyRepository):
     _model = Subcategory
 
-    async def get_with_category(self, id_):
+    async def get_with_category(self, id_) -> dict | None:
         query = (
             select(Subcategory, Category)
             .join(Category, Category.id == Subcategory.category)
@@ -112,7 +112,7 @@ class SubcategoryRepository(AsyncSQLAlchemyRepository):
         )
         data = (await self.session.execute(query)).all()
         if not data:
-            return None
+            return
         data = data[0]
         return {
             **data[0].as_dict(),
@@ -127,7 +127,7 @@ class CompanyRepository(AsyncSQLAlchemyRepository):
 class GoodRepository(AsyncSQLAlchemyRepository):
     _model = Good
 
-    async def get_goods_with_category_and_subcategory(self):
+    async def get_goods_with_category_and_subcategory(self) -> list[dict]:
         query = (
             select(Good, Subcategory, Category)
             .join(Subcategory, Subcategory.id == Good.subcategory)
@@ -142,7 +142,7 @@ class GoodRepository(AsyncSQLAlchemyRepository):
             for good, subcategory, category in (await self.session.execute(query)).all()
         ]
 
-    async def get_good_with_category_and_subcategory(self, id_: str):
+    async def get_good_with_category_and_subcategory(self, id_: str) -> dict | None:
         query = (
             select(Good, Subcategory, Category)
             .join(Subcategory, Subcategory.id == Good.subcategory)
@@ -151,7 +151,7 @@ class GoodRepository(AsyncSQLAlchemyRepository):
         )
         data = (await self.session.execute(query)).all()
         if not data:
-            return None
+            return
         else:
             data = data[0]
             good_data = data[0].as_dict()
@@ -159,7 +159,7 @@ class GoodRepository(AsyncSQLAlchemyRepository):
             good_data['category'] = data[2].as_dict()
             return good_data
 
-    async def get_goods_by_category(self, category_id: str):
+    async def get_goods_by_category(self, category_id: str) -> list[dict]:
         query = (
             select(Good, Subcategory, Category)
             .join(Subcategory, Subcategory.id == Good.subcategory)
@@ -175,7 +175,7 @@ class GoodRepository(AsyncSQLAlchemyRepository):
             for good, subcategory, category in (await self.session.execute(query)).all()
         ]
 
-    async def get_goods_by_subcategory(self, category_id: str):
+    async def get_goods_by_subcategory(self, category_id: str) -> list[dict]:
         query = (
             select(Good, Subcategory, Category)
             .join(Subcategory, Subcategory.id == Good.subcategory)
@@ -194,3 +194,51 @@ class GoodRepository(AsyncSQLAlchemyRepository):
 
 class DescriptionTagRepository(AsyncSQLAlchemyRepository):
     _model = DescriptionTag
+
+
+class BasketRepository(AsyncSQLAlchemyRepository):
+    _model = Basket
+
+    async def get_basket_with_goods_by_user(self, user_id: str) -> dict | None:
+        query = (
+            select(self.model, BasketGood, Good)
+            .join(BasketGood, BasketGood.basket == Basket.id)
+            .join(Good, Good.id == BasketGood.good)
+            .where(Basket.current == True, Basket.user == user_id)      # noqa: E712
+       )
+        result = (await self.session.execute(query)).all()
+        if not result:
+            return
+        basket = result[0][0]
+        return {
+            **basket.as_dict(),
+            "basket_goods": [
+                {**basket_good.as_dict(), "good": good.as_dict()}
+                for _, basket_good, good in result
+            ]
+        }
+
+    async def deactivate_basket(self, id_: str):
+        return await self.update(id_, current=False)
+
+    async def create_new_basket(self, user_id: str):
+        return await self.create(user=user_id)
+
+    async def deactivate_with_creation(self, id_: str, user_id: str):
+        await self.deactivate_basket(id_)
+        return await self.create_new_basket(user_id)
+
+
+class BasketGoodRepository(AsyncSQLAlchemyRepository):
+    _model = BasketGood
+
+
+class OrderRepository(AsyncSQLAlchemyRepository):
+    _model = Order
+
+    async def get_order_by_user(self, user_id) -> dict | None:
+        order = await self.get(user=user_id)
+        if order is None:
+            return
+        basket = await BasketRepository(self.session).get_basket_with_goods_by_user(user_id)
+        return {**order.as_dict(), "basket": basket}
