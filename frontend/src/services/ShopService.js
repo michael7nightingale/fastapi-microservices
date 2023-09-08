@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {getHeaders} from "@/services/Auth";
 import {buildUrl} from "@/services/Base";
-import {assertCallerMetadata} from "@babel/core/lib/config/validation/option-assertions";
 
 
 export function getGoodsList(){

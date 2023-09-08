@@ -72,15 +72,6 @@ services:
     networks:
       - default
 
-  orders:
-    build:
-      context: ./backend/orders
-    ports:
-      - "8006:8006"
-    command: >
-      sh -c "uvicorn main:create_app --host 0.0.0.0 --port 8006 --reload"
-    networks:
-      - default
 
 
 networks:
