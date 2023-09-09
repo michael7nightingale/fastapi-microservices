@@ -8,7 +8,11 @@ from config import Settings
 from datastructures.users import UserRegister, Token, TokenCreate, UserModel
 from datastructures.locations import City, CityCreate, CountryCreate, Country, AddressCreate, Address
 from datastructures.stores import Store
-from datastructures.goods import GoodFull, Category, Subcategory, CategoryFull, SubcategoryFull, DescriptionTag
+from datastructures.goods import (
+    GoodFull, Category, Subcategory, CategoryFull, SubcategoryFull, DescriptionTag,
+    BasketFull, BasketGoodCreate, BasketGoodUpdate
+
+)
 
 
 app = GateWay()
@@ -19,7 +23,6 @@ app = GateWay()
 @app.post(
     path="/users/register",
     service_base_url=Settings().USER_SERVICE_URL,
-    response_model=UserModel,
     body_key="user_data"
 )
 async def register(request: Request, user_data: UserRegister = Body()):
@@ -29,19 +32,17 @@ async def register(request: Request, user_data: UserRegister = Body()):
 @app.post(
     path="/users/token",
     service_base_url=Settings().USER_SERVICE_URL,
-    response_model=Token,
     body_key="token_data"
 )
 async def register(request: Request, token_data: EmailPasswordToken = Body()):
     pass
 
 
-@app.post(
+@app.get(
     path="/users/me",
     service_base_url=Settings().USER_SERVICE_URL,
-    response_model=UserModel,
 )
-async def register(request: Request):
+async def me(request: Request):
     pass
 
 
@@ -195,6 +196,31 @@ async def good(request: Request):
 async def good_description_tags(request: Request):
     pass
 
+
+@app.get(
+    path="/goods/baskets/current",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+)
+async def basket(request: Request):
+    pass
+
+
+@app.post(
+    path="/goods/baskets/current/goods",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    body_key="basket_good_data"
+)
+async def create_basket_good(request: Request, basket_good_data: BasketGoodCreate = Body()):
+    pass
+
+
+@app.patch(
+    path="/goods/baskets/current/goods/{basket_good_id}",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+    body_key="basket_good_data"
+)
+async def update_basket_good(request: Request, basket_good_data: BasketGoodUpdate = Body()):
+    pass
 
 app.include_router(admin_router)
 register_middleware(app)

@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -78,3 +80,63 @@ class DescriptionTag(BaseModel):
     good: str
     tag: str
     text: str
+
+
+class BasketGoodCreate(BaseModel):
+    amount: int = Field(default=1)
+    good: str
+
+
+class BasketGood(BasketGoodCreate):
+    id: str
+
+
+class BasketGoodUpdate(BaseModel):
+    amount: int
+
+
+class BasketGoodFull(BasketGood):
+    good: Good
+
+
+class Basket(BaseModel):
+    id: str
+    user: str
+
+
+class BasketFull(BaseModel):
+    id: str
+    user: str
+    basket_goods: list[BasketGood] = Field(default_factory=list)
+
+
+class OrderCreate(BaseModel):
+    user: str
+    address: str
+
+
+class Order(OrderCreate):
+    basket: str
+    is_paid: str
+    time_created: datetime.datetime
+    time_finished: datetime.datetime
+
+
+class Address(BaseModel):
+    city: str
+    street: str
+    number: str
+
+
+class OrderFull(Order):
+    basket: Basket
+    address: Address
+
+
+class UserModel(BaseModel):
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+    is_superuser: bool = False
+    is_staff: bool = False
