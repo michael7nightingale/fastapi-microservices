@@ -38,6 +38,7 @@ class GateWay(FastAPI):
                     method=method,
                     url=service_url,
                     data=data,
+                    headers=dict(request.headers.items())
                 )
                 if response_model:
                     if response_list:

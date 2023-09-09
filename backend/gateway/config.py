@@ -6,7 +6,6 @@ class Settings(BaseSettings):
     LOCATIONS_SERVICE_URL: str
     STORES_SERVICE_URL: str
     GOODS_SERVICE_URL: str
-    ORDERS_SERVICE_URL: str
 
     DB_URL: str
 
