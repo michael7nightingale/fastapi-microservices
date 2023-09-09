@@ -169,16 +169,17 @@ def upgrade() -> None:
         sa.Column("current", sa.Boolean(), default=False),
         sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['user'], ['users.id'], ),
-        sa.UniqueConstraint('user')
     )
     op.create_table(
         "basketgoods",
         sa.Column('basket', sa.String(length=200), nullable=False),
         sa.Column('good', sa.String(length=200), nullable=False),
         sa.Column('id', sa.String(length=200), nullable=False),
+        sa.Column("amount", sa.Integer()),
         sa.PrimaryKeyConstraint('id'),
         sa.ForeignKeyConstraint(['basket'], ['baskets.id'], ),
         sa.ForeignKeyConstraint(['good'], ['goods.id'], ),
+        sa.UniqueConstraint("basket", "good")
     )
 
     op.create_table(
