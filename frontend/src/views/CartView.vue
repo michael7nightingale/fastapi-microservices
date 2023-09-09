@@ -1,5 +1,5 @@
 <script>
-import {getBasket, showPrice, updateCartGood} from "@/services/ShopService";
+import {deleteCartGood, getBasket, showPrice, updateCartGood} from "@/services/ShopService";
 
 export default {
   name: "CartView",
@@ -19,6 +19,13 @@ export default {
       updateCartGood(basketGood.id, basketGood.amount)
 
     },
+
+    basketGoodDelete(idx, basketGood){
+      let basketGoodsProxy = this.basketGoods;
+      basketGoodsProxy.splice(idx, 1);
+      this.basketGoods = basketGoodsProxy;
+      deleteCartGood(basketGood.good.id);
+    }
 
   },
   data(){
@@ -64,9 +71,9 @@ export default {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="basketGood in basketGoods" class="cart_item" :key="basketGood">
+                                        <tr v-for="(basketGood, idx) in basketGoods" class="cart_item" :key="basketGood">
                                             <td class="product-remove">
-                                                <a title="Remove this item" class="remove" href="#">×</a>
+                                                <a title="Remove this item" class="remove" @click="basketGoodDelete(idx, basketGood)">×</a>
                                             </td>
 
                                             <td class="product-name">

@@ -95,6 +95,10 @@ class AsyncSQLAlchemyRepository:
         await self.session.execute(query)
         await self.commit()
 
+    async def delete_basket(self, id_: str, user: str):
+        basket = await BasketRepository(self.session).get_basket(user)
+        return await self.delete(id=id_, basket=basket.id)
+
     async def commit(self) -> None:
         """Comfortably commit changes"""
         await self.session.commit()

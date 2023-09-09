@@ -113,6 +113,16 @@ export function updateCartGood(basketGoodId, amount){
     )
 }
 
+
+export function deleteCartGood(basketGoodId){
+    return axios.delete(
+        buildUrl(`goods/baskets/current/goods/${basketGoodId}`),
+        {
+            headers: getHeaders()
+        }
+    )
+}
+
 export function showPrice(price, discount){
       return price * (1 - (discount / 100))
     }

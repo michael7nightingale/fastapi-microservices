@@ -222,5 +222,14 @@ async def create_basket_good(request: Request, basket_good_data: BasketGoodCreat
 async def update_basket_good(request: Request, basket_good_data: BasketGoodUpdate = Body()):
     pass
 
+
+@app.delete(
+    path="/goods/baskets/current/goods/{basket_good_id}",
+    service_base_url=Settings().GOODS_SERVICE_URL,
+)
+async def delete_basket_good(request: Request):
+    pass
+
+
 app.include_router(admin_router)
 register_middleware(app)

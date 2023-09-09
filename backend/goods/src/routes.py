@@ -238,7 +238,7 @@ async def basket_good(
         basket_good_id: str,
         basket_good_repository=Depends(get_basket_good_repository),
 ):
-    await basket_good_repository.delete(
+    await basket_good_repository.delete_basket(
         basket_good_id, user=request.user.id
     )
     return JSONResponse(
