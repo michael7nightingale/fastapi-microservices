@@ -7,6 +7,9 @@ from .db.repositories import (
     CategoryRepository,
     SubcategoryRepository,
     CompanyRepository,
+    BasketRepository,
+    BasketGoodRepository,
+    OrderRepository, AsyncSQLAlchemyRepository,
 
 )
 
@@ -21,7 +24,7 @@ async def get_session(pool=Depends(get_pool)):
 
 
 def get_repository(repository_class):
-    def inner(session=Depends(get_session)):
+    def inner(session=Depends(get_session)) -> AsyncSQLAlchemyRepository:
         return repository_class(session)
     return inner
 
@@ -31,6 +34,9 @@ get_company_repository = get_repository(CompanyRepository)
 get_category_repository = get_repository(CategoryRepository)
 get_subcategory_repository = get_repository(SubcategoryRepository)
 get_description_tag_repository = get_repository(DescriptionTagRepository)
+get_basket_repository = get_repository(BasketRepository)
+get_basket_good_repository = get_repository(BasketGoodRepository)
+get_order_repository = get_repository(OrderRepository)
 
 
 async def get_company(

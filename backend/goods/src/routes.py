@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Depends, Request, Body
 from fastapi.responses import JSONResponse
+from fastapi_authtools import login_required
 
 from .dependencies import (
     get_company_repository, get_company, get_description_tag,
     get_category, get_category_repository,
     get_subcategory, get_subcategory_repository,
     get_good, get_good_repository,
-    get_description_tag_repository
+    get_description_tag_repository,
+    get_basket_repository,
+    get_order_repository, get_basket_good_repository,
 
 )
 from .datasructures import (
@@ -14,7 +17,8 @@ from .datasructures import (
     Category, CategoryFull,
     Subcategory, SubcategoryFull,
     Good, GoodCreate, GoodFull,
-    DescriptionTag, DescriptionTagCreate, DescriptionTagUpdate,
+    DescriptionTag, DescriptionTagCreate, DescriptionTagUpdate, BasketGood, OrderCreate, Order, OrderFull,
+    BasketGoodCreate, BasketGoodUpdate, BasketFull,
 
 )
 from .permissions import permission_required
@@ -161,3 +165,99 @@ async def description_tag(
 ):
     await description_tag_repository.delete(description_tag_id)
     return {"detail": "Description tag deleted"}
+
+
+@router.get("/baskets/current", response_model=BasketFull)
+@login_required
+async def basket(
+        request: Request,
+        basket_repository=Depends(get_basket_repository)
+):
+    return await basket_repository.get_basket_with_goods_by_user(request.user.id)
+
+
+@router.post("/orders", response_model=Order)
+@login_required
+async def orders(
+        request: Request,
+        order_repository=Depends(get_order_repository),
+        order_data: OrderCreate = Body(),
+):
+    order_ = order_repository.create_order(**order_data.model_dump())
+    if order_ is None:
+        return JSONResponse(
+            {'detail': "Data is invalid!"},
+            status_code=400
+        )
+    return order_
+
+
+@router.get("/orders/{order_id}", response_model=OrderFull)
+@login_required
+async def order(
+        request: Request,
+        order_id: str,
+        order_repository=Depends(get_order_repository),
+        order_data: OrderCreate = Body(),
+):
+    order_ = order_repository.get_order_by_id_and_user(
+        id_=order_id,
+        user_id=request.user.id
+    )
+    if order_ is None:
+        return JSONResponse(
+            {'detail': "Order does not exists!"},
+            status_code=404
+        )
+    return order_
+
+
+@router.post("/baskets/current/goods", response_model=BasketGood)
+@login_required
+async def basket_goods(
+        request: Request,
+        basket_good_repository=Depends(get_basket_good_repository),
+        basket_good_data: BasketGoodCreate = Body(),
+):
+    basket_good_ = await basket_good_repository.create_basket_good(
+        **basket_good_data.model_dump(),
+        user=request.user.id
+    )
+    if basket_good_ is None:
+        return JSONResponse(
+            {'detail': "Data is invalid!"},
+            status_code=400
+        )
+    return basket_good_
+
+
+@router.delete("/baskets/current/goods/{basket_good_id}", response_model=BasketGood)
+@login_required
+async def basket_good(
+        request: Request,
+        basket_good_id: str,
+        basket_good_repository=Depends(get_basket_good_repository),
+):
+    await basket_good_repository.delete(
+        basket_good_id, user=request.user.id
+    )
+    return JSONResponse(
+        {"detail": "Basket good deleted."}
+    )
+
+
+@router.patch("/baskets/current/goods/{basket_good_id}", response_model=BasketGood)
+@login_required
+async def basket_good(
+        request: Request,
+        basket_good_id: str,
+        basket_good_repository=Depends(get_basket_good_repository),
+        basket_good_data: BasketGoodUpdate = Body()
+):
+    await basket_good_repository.update_basket(
+        values=basket_good_data.model_dump(),
+        id_=basket_good_id, user=request.user.id
+    )
+    return JSONResponse(
+        {"detail": "Basket good updates."}
+    )

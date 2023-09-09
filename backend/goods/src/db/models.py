@@ -29,7 +29,7 @@ class Good(SQLAlchemyModel, Base):
     __tablename__ = "goods"
 
     title = Column(String(200), index=True)
-    # company = Column(String(200), ForeignKey("companies.id"))
+    company = Column(String(200), ForeignKey("companies.id"))
     description = Column(Text())
     subcategory = Column(String(200), ForeignKey("subcategories.id"))
     price = Column(Integer())
@@ -42,6 +42,18 @@ class DescriptionTag(SQLAlchemyModel, Base):
     good = Column(String(200), ForeignKey("goods.id"))
     tag = Column(String(200))
     text = Column(String(200))
+
+
+class User(SQLAlchemyModel, Base):
+    __tablename__ = "users"
+
+    email = Column(String(125), unique=True, index=True)
+    password = Column(String(125))
+    first_name = Column(String(125))
+    last_name = Column(String(125))
+    is_staff = Column(Boolean(), default=False)
+    is_superuser = Column(Boolean(), default=False)
+
 
 
 class Basket(SQLAlchemyModel, Base):

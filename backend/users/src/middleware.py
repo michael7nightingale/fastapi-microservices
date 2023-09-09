@@ -27,14 +27,13 @@ class AuthenticationBackend:
             return scopes, None
         try:
             user = UserModel(**user_data)
-            if user.is_superuser or user.is_staff:
-                return scopes, user
+            return scopes, user
         except:
             pass
         raise authentication.AuthenticationError(Responses.invalid_credentials)
 
     def get_token(self, conn: HTTPConnection) -> str:
-        token = conn.cookies.get("authorization") or conn.cookies.get("Authorization")
+        token = conn.headers.get("authorization") or conn.headers.get("Authorization")
         return token
 
     async def authenticate(

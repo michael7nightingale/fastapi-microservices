@@ -14,6 +14,17 @@ BaseAlchemyModel = TypeVar("BaseAlchemyModel", bound=DeclarativeBase)
 class AsyncSQLAlchemyRepository:
     _model: Type[BaseAlchemyModel]
 
+    @classmethod
+    def get_where_expressions(cls, *args, **kwargs):
+        if len(args) == 1:
+            kwargs.update(id=args[0])
+        elif len(args) > 1:
+            raise ValueError("1 id arg expected.")
+        expected = (
+            getattr(cls._model, key) == value for key, value in kwargs.items()
+        )
+        return expected
+
     def __init__(self, session: AsyncSession):
         self._session = session
 
@@ -31,20 +42,14 @@ class AsyncSQLAlchemyRepository:
             new_obj = self.model(**kwargs)
             await self.save(new_obj)
             return new_obj
-        except IntegrityError:
+        except IntegrityError as e:
+            raise e
             await self.session.rollback()
             return
 
     async def get(self, *args, **kwargs) -> BaseAlchemyModel | None:
         """Get object by pk (id) or other."""
-        if len(args) == 1:
-            kwargs.update(id=args[0])
-        elif len(args) > 1:
-            raise ValueError("1 id arg expected.")
-        expected = (
-            getattr(self.model, key) == value for key, value in kwargs.items()
-        )
-        query = select(self.model).where(*expected)
+        query = select(self.model).where(*self.get_where_expressions(*args, **kwargs))
         return (await self.session.execute(query)).scalar_one_or_none()
 
     async def filter(self, **kwargs) -> list[BaseAlchemyModel]:
@@ -57,15 +62,36 @@ class AsyncSQLAlchemyRepository:
         query = select(self.model)
         return (await self.session.execute(query)).scalars().all()
 
+    @staticmethod
+    def get_not_nullable_kwargs(kwargs: dict) -> dict:
+        return {k: v for k, v in kwargs.items() if v is not None}
+
     async def update(self, id_, **kwargs) -> None:
         """Update object by pk (id) with values kwargs"""
-        query = update(self.model).where(self.model.id == id_).values(**kwargs)
+        query = (
+            update(self.model)
+            .where(self.model.id == id_)
+            .values(self.get_not_nullable_kwargs(**kwargs))
+        )
         await self.session.execute(query)
         await self.commit()
 
-    async def delete(self, id_) -> None:
+    async def update_where(self, values: dict, *args, **kwargs) -> None:
+        query = (
+            update(self.model)
+            .where(*self.get_where_expressions(*args, **kwargs))
+            .values(**self.get_not_nullable_kwargs(values))
+        )
+        await self.session.execute(query)
+        await self.commit()
+
+    async def update_basket(self,  values: dict, id_, user: str) -> None:
+        basket = await BasketRepository(self.session).get_basket(user)
+        return await self.update_where(values, id=id_, basket=basket.id)
+
+    async def delete(self, *args, **kwargs) -> None:
         """Delete object by pk (id)"""
-        query = delete(self.model).where(self.model.id == id_)
+        query = delete(self.model).where(*self.get_where_expressions(*args, **kwargs))
         await self.session.execute(query)
         await self.commit()
 
@@ -208,7 +234,14 @@ class BasketRepository(AsyncSQLAlchemyRepository):
        )
         result = (await self.session.execute(query)).all()
         if not result:
-            return
+            basket = await self.get(user=user_id, current=True)
+            if basket is None:
+                await self.create_new_basket(user_id)
+                return await self.get_basket_with_goods_by_user(user_id)
+            else:
+                return {
+                    **basket.as_dict(),
+                }
         basket = result[0][0]
         return {
             **basket.as_dict(),
@@ -222,23 +255,44 @@ class BasketRepository(AsyncSQLAlchemyRepository):
         return await self.update(id_, current=False)
 
     async def create_new_basket(self, user_id: str):
-        return await self.create(user=user_id)
+        return await self.create(user=user_id, current=True)
 
     async def deactivate_with_creation(self, id_: str, user_id: str):
         await self.deactivate_basket(id_)
         return await self.create_new_basket(user_id)
 
+    async def get_basket(self, user_id: str):
+        basket = await self.get(user=user_id, current=True)
+        if basket is None:
+            return await self.create_new_basket(user_id)
+        return basket
+
 
 class BasketGoodRepository(AsyncSQLAlchemyRepository):
     _model = BasketGood
+
+    async def create_basket_good(self, user: str, good: str, amount: int):
+        basket = await BasketRepository(self.session).get_basket(user)
+        return await self.create(basket=basket.id, good=good, amount=amount)
 
 
 class OrderRepository(AsyncSQLAlchemyRepository):
     _model = Order
 
-    async def get_order_by_user(self, user_id) -> dict | None:
-        order = await self.get(user=user_id)
+    async def get_order_by_id_and_user(self, id_: str, user_id) -> dict | None:
+        order = await self.get(id=id_, user=user_id)
         if order is None:
             return
         basket = await BasketRepository(self.session).get_basket_with_goods_by_user(user_id)
         return {**order.as_dict(), "basket": basket}
+
+    async def create_order(self, user_id: str, address_id: str):
+        basket = await BasketRepository(self.session).get(user=user_id, current=True)
+        if basket is None:
+            return
+        return await self.create(
+            user=user_id,
+            basket=basket,
+            address=address_id,
+        )
+

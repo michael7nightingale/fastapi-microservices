@@ -41,7 +41,7 @@ async def register(
     return user
 
 
-@router.post("/me", response_model=UserModel)
+@router.get("/me")
 @login_required
 async def me(request: Request):
     return request.user
