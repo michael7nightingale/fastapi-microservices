@@ -16,11 +16,17 @@ export default {
         loginUser(this.email, this.password)
             .then((response) => {
               data = response.data;
-              setUser(data.access_token)
-              this.$router.push({name: "homepage"});
+              console.log(data)
+              if (data['access-token']){
+                setUser(data['access-token'])
+                this.$router.push({name: "homepage"});
+              }
+              else{
+                window.location.reload();
+              }
             })
             .catch((error) => {
-              alert(error.response.data.detail);
+              alert(error.data.detail);
             })
     },
 

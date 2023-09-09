@@ -1,5 +1,5 @@
 <script>
-import {getGoodsListBySubcategory, getSubcategory} from "@/services/ShopService";
+import {getGoodsListBySubcategory, getSubcategory, showPrice} from "@/services/ShopService";
 
 export default {
   name: "ShopView",
@@ -28,14 +28,13 @@ export default {
           this.goods = response.data;
         })
         .catch((error) => {
-          console.log(error.response.data.detail);
+          console.log(error);
         });
   },
 
   methods: {
-    showPrice(price, discount){
-      return price * (1 - (discount / 100))
-    }
+    showPrice
+
   }
 
 }

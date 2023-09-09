@@ -75,16 +75,44 @@ export function getSubcategory(subcategoryId){
 }
 
 
+export function getBasket(){
+    return axios.get(
+        buildUrl("goods/baskets/current"),
+        {
+            headers: getHeaders()
+        }
+    )
+}
+
+
 export function addToCart(goodId, amount){
     let data = {
         good: goodId,
         amount: amount
     }
      return axios.post(
-        buildUrl(`orders/basket/goods`),
+        buildUrl(`goods/baskets/current/goods`),
          data,
         {
             headers: getHeaders()
         }
     )
 }
+
+
+export function updateCartGood(basketGoodId, amount){
+    let data = {
+        amount: amount
+    }
+    return axios.patch(
+        buildUrl(`goods/baskets/current/goods/${basketGoodId}`),
+        data,
+        {
+            headers: getHeaders()
+        }
+    )
+}
+
+export function showPrice(price, discount){
+      return price * (1 - (discount / 100))
+    }

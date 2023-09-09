@@ -40,6 +40,7 @@ export default {
                            <li><router-link :to="{name: 'navigation'}"><i class=""></i>Navigation</router-link></li>
                              <li v-if="User"><a><i class="fa fa-heart"></i> Wishlist</a></li>
                           <li v-if="User"><a><i class="fa fa-user"></i> My Account</a></li>
+                          <li><router-link :to="{name: 'login'}"><i class="fa fa-user"></i> Login</router-link></li>
                             <li v-if="User">
                               <router-link :to="{name: 'cart'}">
                                 Cart - <span class="cart-amunt">$100</span> <i class="fa fa-shopping-cart"></i>

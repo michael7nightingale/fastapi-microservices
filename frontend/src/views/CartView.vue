@@ -1,10 +1,44 @@
 <script>
+import {getBasket, showPrice, updateCartGood} from "@/services/ShopService";
+
 export default {
   name: "CartView",
+  methods: {
+    showPrice,
+    basketGoodDecrement(basketGood){
+      if (basketGood.amount <= 1){
+        return;
+      }
+      basketGood.amount -= 1;
+      updateCartGood(basketGood.id, basketGood.amount)
+
+    },
+
+     basketGoodIncrement(basketGood){
+      basketGood.amount += 1;
+      updateCartGood(basketGood.id, basketGood.amount)
+
+    },
+
+  },
   data(){
     return{
+        basket: {},
+        basketGoods: [],
 
     }
+  },
+
+  mounted() {
+    getBasket()
+        .then((response) => {
+          this.basket = response.data;
+          this.basketGoods = response.data.basket_goods;
+        })
+        .catch((error) => {
+          console.error(error)
+          this.$router.push({name: "login"})
+        })
   },
 
 }
@@ -23,41 +57,39 @@ export default {
                                     <thead>
                                         <tr>
                                             <th class="product-remove">&nbsp;</th>
-                                            <th class="product-thumbnail">&nbsp;</th>
                                             <th class="product-name">Product</th>
                                             <th class="product-price">Price</th>
-                                            <th class="product-quantity">Quantity</th>
+                                            <th class="product-quantity">Amount</th>
                                             <th class="product-subtotal">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="cart_item">
+                                        <tr v-for="basketGood in basketGoods" class="cart_item" :key="basketGood">
                                             <td class="product-remove">
                                                 <a title="Remove this item" class="remove" href="#">×</a>
                                             </td>
 
-                                            <td class="product-thumbnail">
-                                                <a href="single-product.html"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="img/product-thumb-2.jpg"></a>
-                                            </td>
-
                                             <td class="product-name">
-                                                <a href="single-product.html">Ship Your Idea</a>
+                                                <router-link :to="{name: 'product', params: {id: `${basketGood.good.id}`}}">
+                                                  {{ basketGood.good.title }}
+                                                </router-link>
                                             </td>
 
                                             <td class="product-price">
-                                                <span class="amount">£15.00</span>
+                                                <span class="amount">{{ showPrice(basketGood.good.price, basketGood.good.discount) }} RUB</span>
                                             </td>
 
                                             <td class="product-quantity">
                                                 <div class="quantity buttons_added">
-                                                    <input type="button" class="minus" value="-">
-                                                    <input type="number" size="4" class="input-text qty text" title="Qty" value="1" min="0" step="1">
-                                                    <input type="button" class="plus" value="+">
+                                                    <input type="button" class="minus" value="-" @click="basketGoodDecrement(basketGood)">
+                                                    <input type="number" size="4" class="input-text qty text" title="Qty"
+                                                           :value="basketGood.amount" min="1" step="1">
+                                                    <input type="button" class="plus" value="+" @click="basketGoodIncrement(basketGood)">
                                                 </div>
                                             </td>
 
                                             <td class="product-subtotal">
-                                                <span class="amount">£15.00</span>
+                                                <span class="amount">{{ showPrice(basketGood.good.price, basketGood.good.discount) * basketGood.amount }} RUB</span>
                                             </td>
                                         </tr>
                                         <tr>

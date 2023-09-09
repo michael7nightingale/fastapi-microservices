@@ -1,5 +1,5 @@
 <script>
-import {getCategory, getGoodsListByCategory} from "@/services/ShopService";
+import {getCategory, getGoodsListByCategory, showPrice} from "@/services/ShopService";
 
 export default {
   name: "ShopView",
@@ -31,9 +31,8 @@ export default {
   },
 
   methods: {
-    showPrice(price, discount){
-      return price * (1 - (discount / 100))
-    }
+    showPrice
+
   }
 
 }

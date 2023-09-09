@@ -1,8 +1,18 @@
 import {meUser} from "@/services/UserService";
+import axios from "axios";
+import {buildUrl} from "@/services/Base";
 
 export function setUser(token){
     localStorage.user = token;
-    meUser().then(response => {
+     axios.get(
+        buildUrl('users/me'),
+        {
+            headers: getHeaders()
+        }
+     )
+         .then((response) =>
+         localStorage.userData = JSON.stringify(response.data));
+    return meUser().then((response) => {
         localStorage.userData = JSON.stringify(response.data);
     })
 

@@ -26,7 +26,7 @@ export function registerUser(data){
 
 export function meUser(){
     return axios.get(
-        buildUrl('users/me/'),
+        buildUrl('users/me'),
         {
             headers: getHeaders()
         }

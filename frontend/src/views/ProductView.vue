@@ -1,5 +1,5 @@
 <script>
-import {getGood, getGoodDescriptionTags} from "@/services/ShopService";
+import {addToCart, getGood, getGoodDescriptionTags, showPrice} from "@/services/ShopService";
 import {getUser} from "@/services/Auth";
 
 export default {
@@ -39,21 +39,20 @@ export default {
   },
 
    methods: {
-    showPrice(price, discount){
-      return price * (1 - (discount / 100))
-    },
-
+     showPrice,
      amountInput(value){
       this.amount = value
     },
 
      addCartClick(){
-      if (!this.User){
-          this.$router.push({name: "login"})
-      }
-      else{
-          this.$router.push({name: "cart"})
-      }
+      addToCart(this.goodId, this.amount)
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            console.log(error);
+            this.$router.push({name: "cart"});
+          });
      },
 
   }
